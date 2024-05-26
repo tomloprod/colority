@@ -103,42 +103,50 @@ $contrastRatio = $hexColor->getContrastRatio(new HexColor('#3FA684'));
 
 #### AA & AAA WCAG levels
 
-Below we show you how to check if a contrast ratio meets WCAG AA and AAA levels.
+Below we show you how to check if a contrast ratio meets WCAG AA and AAA levels using `Tomloprod\Colority\Support\Algorithms\ContrastRatioScore`.
 
 ```php
 /** @var HexColor $hexColor */
 $hexColor = colority()->fromHex('#51B389');
 
 /**
+ * The `getContrastRatio` method can take a `Color` object as the foreground 
+ * to calculate the contrast ratio against that color. Black is used by default.
+ * 
+ * @var float $contrastRatio
+ */
+$contrastRatio = $hexColor->getContrastRatio();
+
+/**
  * AA Level for texts
  */
-$passsesAALevelForLargeText = ContrasRatioScore::passesTextAALevel(
-    contrastRatio: $hexColor->getContrastRatio(),
+$passsesAALevelForLargeText = ContrastRatioScore::passesTextAALevel(
+    contrastRatio: $contrastRatio,
     largeText: true
 );
 
-$passsesAALevelForNormalText = ContrasRatioScore::passesTextAALevel(
-    contrastRatio: $hexColor->getContrastRatio(),
+$passsesAALevelForNormalText = ContrastRatioScore::passesTextAALevel(
+    contrastRatio: $contrastRatio,
     largeText: false
 );
 
 /**
  * AAA Level for texts
  */
-$passsesAAALevelForLargeText = ContrasRatioScore::passesTextAAALevel(
-    contrastRatio: $hexColor->getContrastRatio(),
+$passsesAAALevelForLargeText = ContrastRatioScore::passesTextAAALevel(
+    contrastRatio: $contrastRatio,
     largeText: true
 );
 
-$passsesAAALevelForNormalText = ContrasRatioScore::passesTextAAALevel(
-    contrastRatio: $hexColor->getContrastRatio(),
+$passsesAAALevelForNormalText = ContrastRatioScore::passesTextAAALevel(
+    contrastRatio: $contrastRatio,
     largeText: false
 );
 /**
  * AA Level for Graphical Objects and User Interface Components
  */
-$passsesAALevelForUI = ContrasRatioScore::passesUIAALevel(
-    $hexColor->getContrastRatio()
+$passsesAALevelForUI = ContrastRatioScore::passesUIAALevel(
+    $contrastRatio
 );
 
 ```
