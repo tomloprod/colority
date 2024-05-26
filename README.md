@@ -1,5 +1,5 @@
 <p align="center">
-    <img title="Laravel Zero" height="100" src="./docs/colority.png" alt="Colority" />
+    <img title="Colority" height="100" src="./docs/colority.png" alt="Colority" />
 </p>
 
 <p align="center">
