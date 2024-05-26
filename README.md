@@ -101,6 +101,49 @@ $contrastRatio = $hexColor->getContrastRatio();
 $contrastRatio = $hexColor->getContrastRatio(new HexColor('#3FA684'));
 ```
 
+#### AA & AAA WCAG levels
+
+Below we show you how to check if a contrast ratio meets WCAG AA and AAA levels.
+
+```php
+/** @var HexColor $hexColor */
+$hexColor = colority()->fromHex('#51B389');
+
+/**
+ * AA Level for texts
+ */
+$passsesAALevelForLargeText = ContrasRatioScore::passesTextAALevel(
+    contrastRatio: $hexColor->getContrastRatio(),
+    largeText: true
+);
+
+$passsesAALevelForNormalText = ContrasRatioScore::passesTextAALevel(
+    contrastRatio: $hexColor->getContrastRatio(),
+    largeText: false
+);
+
+/**
+ * AAA Level for texts
+ */
+$passsesAAALevelForLargeText = ContrasRatioScore::passesTextAAALevel(
+    contrastRatio: $hexColor->getContrastRatio(),
+    largeText: true
+);
+
+$passsesAAALevelForNormalText = ContrasRatioScore::passesTextAAALevel(
+    contrastRatio: $hexColor->getContrastRatio(),
+    largeText: false
+);
+/**
+ * AA Level for Graphical Objects and User Interface Components
+ */
+$passsesAALevelForUI = ContrasRatioScore::passesUIAALevel(
+    $hexColor->getContrastRatio()
+);
+
+```
+
+
 ### Color validation
 The concrete `Color` classes have a static method called `getParser()` which returns an instance of `ValueColorParser`.
 

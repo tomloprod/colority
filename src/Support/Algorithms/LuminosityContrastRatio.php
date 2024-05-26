@@ -28,9 +28,6 @@ final class LuminosityContrastRatio
         $lum1 = $this->getLuminance($rgbBackgroundColor[0], $rgbBackgroundColor[1], $rgbBackgroundColor[2]);
         $lum2 = $this->getLuminance($rgbForegroundColor[0], $rgbForegroundColor[1], $rgbForegroundColor[2]);
 
-        // @codeCoverageIgnoreStart
-        // @codeCoverageIgnoreEnd
-
         // Ensure L1 is the lighter luminance and L2 is the darker luminance
         $L1 = max($lum1, $lum2);
         $L2 = min($lum1, $lum2);
