@@ -200,15 +200,19 @@ $hslColor = $hexColor->toHsl();
 
 Generate a fixed color based on a string.
 
+![getSimilarColor gif](./docs/example-text-to-color.gif)
+
 ```php
 /** @var HslColor $hslColor */
 $hslColor = colority()->textToColor("Hi, I'm Tomás");
 ```
 > **🧙 Advise** 
-> Useful for generating a color associated with, for example, a username, mail address, etc, since a string will always return the same color.
+> Useful for generating a color associated with, for example, **a username, mail address, etc**, since a string will always return the same color.
 
 #### getSimilarColor
 Allows you to obtain a random color similar (*in the same color palette*) to a given color.
+
+![getSimilarColor gif](./docs/example-get-similar-color.gif)
 
 ```php
 /** @var HexColor|null $hexColor */
