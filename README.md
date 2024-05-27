@@ -1,6 +1,6 @@
-<p align="center">
+<!--<p align="center">
     <img title="Colority" height="100" src="./docs/colority.png" alt="Colority" />
-</p>
+</p>-->
 
 <p align="center">
     <p align="center">
