@@ -9,10 +9,13 @@ use Tomloprod\Colority\Colors\Color;
 use Tomloprod\Colority\Colors\HexColor;
 use Tomloprod\Colority\Colors\HslColor;
 use Tomloprod\Colority\Colors\RgbColor;
+use Tomloprod\Colority\Concerns\ExtractsColorsFromImage;
 use Tomloprod\Colority\Support\ValueColorParserResolver;
 
 final class ColorityManager
 {
+    use ExtractsColorsFromImage;
+
     private static ColorityManager $instance;
 
     private function __construct()

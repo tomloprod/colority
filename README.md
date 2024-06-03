@@ -196,6 +196,22 @@ $hslColor = $hexColor->toHsl();
 
 ### Color utilities
 
+#### getImageColors
+
+It allows you to obtain the colors detected in an image. As the first argument, the path to the image must be provided. 
+
+It has an optional second parameter (default is 5) that specifies the number of colors to be returned.
+
+![getImageColors gif](./docs/example-get-image-colors.gif)
+
+```php
+/** @var array<RgbColor> $imageColors */
+$imageColors = colority()->getImageColors(
+    imagePath: __DIR__.'/image-colors.png',
+    desiredNumColors: 10
+);
+```
+
 #### textToColor
 
 Generate a fixed color based on a string.
