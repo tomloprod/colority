@@ -23,6 +23,7 @@ Additionally, it lets you check if a **background color meets the WCAG 2.0 acces
 
 Furthermore, it includes multiple functions such as the following:
 
+- It allows you to **obtain the colors found in an image**
 - Generate the **best foreground color** (*white, black, or from a user-provided list*) for a background color, ensuring the best possible contrast ratio. (*important for improving text visibility on, for example, colored badges*).
 - Generate a **fixed color based on a string.** Useful for generating a color associated with, for example, a username.
 - Allows you to obtain a **random color similar to a given color.**
