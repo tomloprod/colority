@@ -20,7 +20,7 @@
         "ext-mbstring": "*"
     },
     "require-dev": {
-        "laravel/pint": "^1.15.2",
+        "laravel/pint": "^1.22.1",
         "pestphp/pest": "^3.8.2",
         "pestphp/pest-plugin-type-coverage": "^3.5.0",
         "rector/rector": "^1.0.4"
