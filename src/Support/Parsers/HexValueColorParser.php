@@ -33,7 +33,7 @@ final readonly class HexValueColorParser implements ValueColorParser
         $results = [];
         preg_match(self::getRegex(), $parsedValueColor, $results);
 
-        if (count($results) === 0) {
+        if ($results === []) {
             throw new InvalidArgumentException('Unknown or invalid value color');
         }
 

@@ -21,8 +21,8 @@
     },
     "require-dev": {
         "laravel/pint": "^1.15.2",
-        "pestphp/pest": "^2.34",
-        "pestphp/pest-plugin-type-coverage": "^2.8",
+        "pestphp/pest": "^3.8.2",
+        "pestphp/pest-plugin-type-coverage": "^3.5.0",
         "rector/rector": "^1.0.4"
     },
     "autoload": {

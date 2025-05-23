@@ -22,9 +22,7 @@ final readonly class ValueColorParserResolver
         HexColor::class,
         HslColor::class,
         RgbColor::class,
-    ])
-    {
-    }
+    ]) {}
 
     /**
      * Parses the value color

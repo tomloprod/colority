@@ -18,9 +18,7 @@ final class ColorityManager
 
     private static ColorityManager $instance;
 
-    private function __construct()
-    {
-    }
+    private function __construct() {}
 
     public function __clone()
     {

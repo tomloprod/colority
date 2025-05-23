@@ -30,7 +30,7 @@ final readonly class HslValueColorParser implements ValueColorParser
         $results = [];
         preg_match(self::getRegex(), $parsedValueColor, $results);
 
-        if (count($results) === 0) {
+        if ($results === []) {
             throw new InvalidArgumentException('Unknown or invalid value color: '.$parsedValueColor);
         }
 
