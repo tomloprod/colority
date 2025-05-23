@@ -18,11 +18,13 @@ final readonly class ValueColorParserResolver
      *
      * @param  array<int, class-string<Color>>  $colorClasses
      */
-    public function __construct(private array $colorClasses = [
-        HexColor::class,
-        HslColor::class,
-        RgbColor::class,
-    ]) {}
+    public function __construct(
+        private array $colorClasses = [
+            HexColor::class,
+            HslColor::class,
+            RgbColor::class,
+        ]
+    ) {}
 
     /**
      * Parses the value color
