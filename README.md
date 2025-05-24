@@ -46,9 +46,9 @@ $hexColor = colority()->fromHex('51B389');
 $hexColor = colority()->fromHex('#ABC');
 
 /** @var HslColor $hslColor */
-$hslColor = colority()->fromRgb('hsl(168.31deg, 49.58%, 46.67%)');
-$hslColor = colority()->fromRgb('168.31, 49.58, 46.67'); 
-$hslColor = colority()->fromRgb([168.31, 49.58, 46.67]); 
+$hslColor = colority()->fromHsl('hsl(168.31deg, 49.58%, 46.67%)');
+$hslColor = colority()->fromHsl('168.31, 49.58, 46.67'); 
+$hslColor = colority()->fromHsl([168.31, 49.58, 46.67]); 
 ```
 If you cannot specify the original format of the value color, you can use the `parse` method. This will detect what type of color it is and instantiate a new object or, if the received string does not match any type of color, it will return `NULL`:
 ```php
