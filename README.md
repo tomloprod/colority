@@ -223,6 +223,27 @@ Generate a fixed color based on a string.
 /** @var HslColor $hslColor */
 $hslColor = colority()->textToColor("Hi, I'm Tomás");
 ```
+
+You can also pass a `fromColor`. In that case, only colors within the same color range as that color will be generated.
+
+```php
+/** @var HslColor $hslColor - Only colors within the grayscale range. */
+$hslColor = colority()->textToColor("Hi, I'm Tomás", colority()->fromHex('#CCC'));
+```
+
+On the other hand, if you pass both `fromColor` and `toColor`, the method performs a **linear interpolation** between the two colors. The same text will always map to the same position in the gradient between the colors, creating a deterministic color that falls somewhere on the line connecting the two provided colors.
+
+```php
+/** @var HslColor $hslColor - Color interpolated between light green and dark teal */
+$hslColor = colority()->textToColor(
+    "Hi, I'm Tomás",
+    colority()->fromHex('#85d5a4'), // Light green (start point)
+    colority()->fromHex('#165a59')  // Dark teal (end point)
+);
+```
+
+This interpolation approach is particularly useful for creating **consistent color themes** where you want all generated colors to harmonize within a specific palette range.
+
 > **🧙 Advise** 
 > Useful for generating a color associated with, for example, **a username, mail address, etc**, since a string will always return the same color.
 
@@ -273,7 +294,7 @@ Colority::fromRgb(string|array<int> $rgbValue): RgbColor
 
 Colority::fromHsl(string|array<float> $hslValue): HslColor
 
-Colority::textToColor(string $text): HslColor
+Colority::textToColor(string $text, ?Color $fromColor = null, ?Color $toColor = null): HslColor
 
 Colority::getSimilarColor(Color $color, int $hueRange = 30, int $saturationRange = 10, int $lightnessRange = 10): Color
 ```
