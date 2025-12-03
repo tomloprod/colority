@@ -112,6 +112,64 @@ final class ColorityManager
         return $this->fromHsl([$hue, $saturation, $lightness]);
     }
 
+    /**
+     * Generates a gradient of colors between multiple colors.
+     *
+     * @param  array<Color>  $colors  The array of colors to create the gradient from
+     * @param  int  $steps  The number of steps in the gradient
+     * @return array<HexColor> An array of HexColor objects representing the gradient
+     */
+    public function gradient(array $colors, int $steps = 5): array
+    {
+        if ($colors === []) {
+            return [];
+        }
+
+        if ($steps < 2 || count($colors) === 1) {
+            return [$colors[0]->toHsl()->toHex()];
+        }
+
+        $gradientColors = [];
+        $totalSegments = count($colors) - 1;
+
+        for ($i = 0; $i < $steps; $i++) {
+            // Calculate global progress (0 to 1)
+            $t = $i / ($steps - 1);
+
+            // Calculate which segment we are in
+            $segment = (int) floor($t * $totalSegments);
+
+            // Handle the last point explicitly to avoid out of bounds
+            if ($segment >= $totalSegments) {
+                $segment = $totalSegments - 1;
+            }
+
+            // Calculate local progress within the segment (0 to 1)
+            $segmentStart = $segment / $totalSegments;
+            $segmentEnd = ($segment + 1) / $totalSegments;
+            $localT = ($t - $segmentStart) / ($segmentEnd - $segmentStart);
+
+            $startHsl = $colors[$segment]->toHsl();
+            $endHsl = $colors[$segment + 1]->toHsl();
+
+            [$startH, $startS, $startL] = $startHsl->getArrayValueColor();
+            [$endH, $endS, $endL] = $endHsl->getArrayValueColor();
+
+            $hue = $startH + ($endH - $startH) * $localT;
+            $saturation = $startS + ($endS - $startS) * $localT;
+            $lightness = $startL + ($endL - $startL) * $localT;
+
+            // Ensure values are within valid ranges and rounded to avoid precision issues
+            $hue = round(max(0, min(360, $hue)), 2);
+            $saturation = round(max(0, min(100, $saturation)), 2);
+            $lightness = round(max(0, min(100, $lightness)), 2);
+
+            $gradientColors[] = $this->fromHsl([$hue, $saturation, $lightness])->toHex();
+        }
+
+        return $gradientColors;
+    }
+
     public function getSimilarColor(Color $color, int $hueRange = 30, int $saturationRange = 10, int $lightnessRange = 10): Color
     {
         [$baseH, $baseS, $baseL] = $color->toHsl()->getArrayValueColor();

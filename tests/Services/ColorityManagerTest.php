@@ -186,3 +186,103 @@ test('fromHsl() with invalid value color throws InvalidArgumentException', funct
     expect($colority->parse($hslColor))->toBeNull();
 
 })->with(['xxx(0,0,0)', 't,o,m', '(-255,-255,-255)', '0,0,0,0', 'hsl(0,0,0,0)']);
+
+/**
+ * Gradient
+ */
+it('generates a gradient between two colors', function (): void {
+    $colority = ColorityManager::instance();
+
+    $start = $colority->fromHex('#000000');
+
+    $end = $colority->fromHex('#ffffff');
+
+    $gradient = $colority->gradient([$start, $end], 3);
+
+    expect($gradient)->toHaveCount(3);
+
+    // Start color should be black
+    expect(strtolower($gradient[0]->toHex()->getValueColor()))->toBe('#000000');
+
+    // Middle color should be gray
+    // HSL interpolation of black (0,0,0) and white (0,0,100) -> (0,0,50) -> #808080
+    expect(strtolower($gradient[1]->toHex()->getValueColor()))->toBe('#808080');
+
+    // End color should be white
+    expect(strtolower($gradient[2]->toHex()->getValueColor()))->toBe('#ffffff');
+});
+
+it('generates a gradient with default steps', function (): void {
+    $colority = ColorityManager::instance();
+
+    $start = $colority->fromHex('#ff0000');
+
+    $end = $colority->fromHex('#0000ff');
+
+    $gradient = $colority->gradient([$start, $end]);
+
+    expect($gradient)->toHaveCount(5);
+});
+
+it('handles single step gradient request', function (): void {
+    $colority = ColorityManager::instance();
+
+    $start = $colority->fromHex('#ff0000');
+
+    $end = $colority->fromHex('#0000ff');
+
+    $gradient = $colority->gradient([$start, $end], 1);
+
+    expect($gradient)->toHaveCount(1);
+
+    expect(strtolower($gradient[0]->toHex()->getValueColor()))->toBe('#ff0000');
+});
+
+it('generates a gradient through multiple colors', function (): void {
+
+    $colority = ColorityManager::instance();
+
+    $red = $colority->fromHex('#ff0000');
+
+    $green = $colority->fromHex('#00ff00');
+
+    $blue = $colority->fromHex('#0000ff');
+
+    // 5 steps: Red -> (Red-Green) -> Green -> (Green-Blue) -> Blue
+    $gradient = $colority->gradient([$red, $green, $blue], 5);
+
+    expect($gradient)->toHaveCount(5);
+
+    expect($gradient)->each->toBeInstanceOf(HexColor::class);
+
+    $hexes = array_map(fn ($c) => strtolower($c->toHex()->getValueColor()), $gradient);
+
+    // Check start
+    expect($hexes[0])->toBe('#ff0000');
+
+    // Check middle
+    expect($hexes[2])->toBe('#00ff00');
+
+    // Check end
+    expect($hexes[4])->toBe('#0000ff');
+});
+
+it('handles empty array of colors', function (): void {
+    $colority = ColorityManager::instance();
+
+    $gradient = $colority->gradient([]);
+
+    expect($gradient)->toBeEmpty();
+});
+
+it('handles single color array', function (): void {
+    $colority = ColorityManager::instance();
+
+    $red = $colority->fromHex('#ff0000');
+
+    $gradient = $colority->gradient([$red], 5);
+
+    expect($gradient)->toHaveCount(1);
+
+    expect(strtolower($gradient[0]->toHex()->getValueColor()))->toBe('#ff0000');
+});
