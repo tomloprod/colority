@@ -260,6 +260,23 @@ $hexColor = colority()->fromHex('#51B389');
 $similarHexColor = colority()->getSimilarColor($hexColor);
 ```
 
+#### gradient
+
+Generates a gradient of colors between multiple colors.
+
+```php
+/** @var array<HexColor> $gradient */
+$gradient = colority()->gradient(
+    colors: [
+        colority()->fromHex('#ff0000'), // Red
+        colority()->fromHex('#00ff00'), // Green
+        colority()->fromHex('#0000ff')  // Blue
+    ],
+    steps: 10
+);
+```
+
+
 ### Ways of using Colority
 You can use Colority either with the aliases `colority()` 
 ```php
@@ -297,6 +314,8 @@ Colority::fromHsl(string|array<float> $hslValue): HslColor
 Colority::textToColor(string $text, ?Color $fromColor = null, ?Color $toColor = null): HslColor
 
 Colority::getSimilarColor(Color $color, int $hueRange = 30, int $saturationRange = 10, int $lightnessRange = 10): Color
+
+Colority::gradient(array<Color> $colors, int $steps = 5): array<HexColor>
 ```
 
 ### `Color`
