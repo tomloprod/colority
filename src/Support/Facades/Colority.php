@@ -16,8 +16,9 @@ use Tomloprod\Colority\Services\ColorityManager;
  * @method static RgbColor fromRgb(string|array<int> $rgbValue)
  * @method static HslColor fromHsl(string|array<float> $hslValue)
  * @method static HslColor textToColor(string $text, ?Color $fromColor = null, ?Color $toColor = null)
- * @method static getSimilarColor(Color $color, int $hueRange = 30, int $saturationRange = 10, int $lightnessRange = 10): Color
- * @method static array<HexColor> gradient(array<Color> $colors, int $steps = 5): array
+ * @method static HslColor random()
+ * @method static Color getSimilarColor(Color $color, int $hueRange = 30, int $saturationRange = 10, int $lightnessRange = 10)
+ * @method static array<HexColor> gradient(array<Color> $colors, int $steps = 5)
  */
 final class Colority
 {

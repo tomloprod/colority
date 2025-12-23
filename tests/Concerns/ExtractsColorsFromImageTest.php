@@ -13,7 +13,7 @@ test('getImageColors can obtain image colors', function (): void {
         $hexImageColors[] = $imageColor->toHex()->getValueColor();
     }
 
-    foreach (['#ff0101', '#18ff01', '#014bff', '#ffcb01'] as $hexColor) {
+    foreach (['#FF0101', '#18FF01', '#014BFF', '#FFCB01'] as $hexColor) {
         expect(in_array($hexColor, $hexImageColors))->toBeTrue();
     }
 });
