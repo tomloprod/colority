@@ -11,6 +11,13 @@ namespace Tomloprod\Colority\Support\Algorithms;
 final class LuminosityContrastRatio
 {
     /**
+     * WCAG 2.0 relative luminance threshold for dark/light classification.
+     * This is the perceptual midpoint where contrast ratio with white equals
+     * contrast ratio with black.
+     */
+    public const DARK_LUMINANCE_THRESHOLD = 0.179;
+
+    /**
      * Calculate the luminosity contrast ratio between two RGB colors (background
      * and foreground).
      *
@@ -47,7 +54,7 @@ final class LuminosityContrastRatio
      * @param  int  $b  Blue value (0-255).
      * @return float Luminosity.
      */
-    private function getLuminance(int $r, int $g, int $b): float
+    public function getLuminance(int $r, int $g, int $b): float
     {
         // Convert RGB from 8-bit to sRGB
         $srgbRed = $r / 255;

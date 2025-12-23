@@ -69,7 +69,7 @@ final class ColorityManager
         $hash = hash('sha256', $text);
 
         if ($fromColor instanceof Color && $toColor instanceof Color) {
-            // Interpolar entre dos colores base
+            // Interpolar between two base colors
             $startHslColor = $fromColor->toHsl();
             $endHslColor = $toColor->toHsl();
 
@@ -168,6 +168,18 @@ final class ColorityManager
         }
 
         return $gradientColors;
+    }
+
+    /**
+     * Generates a random color.
+     */
+    public function random(): HslColor
+    {
+        $hue = mt_rand(0, 360);
+        $saturation = mt_rand(0, 100);
+        $lightness = mt_rand(0, 100);
+
+        return $this->fromHsl([$hue, $saturation, $lightness]);
     }
 
     public function getSimilarColor(Color $color, int $hueRange = 30, int $saturationRange = 10, int $lightnessRange = 10): Color

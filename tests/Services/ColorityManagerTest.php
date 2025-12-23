@@ -92,6 +92,32 @@ test('getSimilarColor', function (): void {
     expect($instance->getSimilarColor(new HslColor('hsl(77deg,56%,13%)')))->toBeInstanceOf(HslColor::class);
 });
 
+test('random() returns a valid HslColor', function (): void {
+    $instance = ColorityManager::instance();
+
+    $randomColor = $instance->random();
+
+    expect($randomColor)->toBeInstanceOf(HslColor::class);
+
+    [$hue, $saturation, $lightness] = $randomColor->getArrayValueColor();
+
+    expect($hue)->toBeGreaterThanOrEqual(0)->toBeLessThanOrEqual(360);
+    expect($saturation)->toBeGreaterThanOrEqual(0)->toBeLessThanOrEqual(100);
+    expect($lightness)->toBeGreaterThanOrEqual(0)->toBeLessThanOrEqual(100);
+});
+
+test('random() returns different colors on consecutive calls', function (): void {
+    $instance = ColorityManager::instance();
+
+    $colors = [];
+    for ($i = 0; $i < 10; $i++) {
+        $colors[] = $instance->random()->getValueColor();
+    }
+
+    // At least some colors should be different (extremely unlikely all 10 are the same)
+    expect(count(array_unique($colors)))->toBeGreaterThan(1);
+});
+
 /**
  * Hex
  */

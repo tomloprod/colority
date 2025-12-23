@@ -260,6 +260,15 @@ $hexColor = colority()->fromHex('#51B389');
 $similarHexColor = colority()->getSimilarColor($hexColor);
 ```
 
+#### random
+
+Generates a completely random color.
+
+```php
+/** @var HslColor $randomColor */
+$randomColor = colority()->random();
+```
+
 #### gradient
 
 Generates a gradient of colors between multiple colors.
@@ -315,6 +324,8 @@ Colority::textToColor(string $text, ?Color $fromColor = null, ?Color $toColor = 
 
 Colority::getSimilarColor(Color $color, int $hueRange = 30, int $saturationRange = 10, int $lightnessRange = 10): Color
 
+Colority::random(): HslColor
+
 Colority::gradient(array<Color> $colors, int $steps = 5): array<HexColor>
 ```
 
@@ -336,6 +347,49 @@ $hexColor->toHsl(): HslColor;
 
 // Returns the value color in string format. Example: #CCCCCC
 $hexColor->getValueColor(): string;
+
+// Compare two colors for equality
+$hexColor->isEqualTo(Color $color): bool;
+
+// Check if the color is dark
+$hexColor->isDark(): bool;
+
+// Check if the color is light
+$hexColor->isLight(): bool;
+
+// Check if this color is darker than another color
+$hexColor->isDarkerThan(Color $color): bool;
+
+// Check if this color is lighter than another color
+$hexColor->isLighterThan(Color $color): bool;
+
+// Get the relative luminance (0.0 to 1.0) according to WCAG 2.0
+$hexColor->getLuminance(): float;
+```
+
+#### Color comparison examples
+
+```php
+/** @var HexColor $darkColor */
+$darkColor = Colority::fromHex('#333333');
+
+/** @var HexColor $lightColor */
+$lightColor = Colority::fromHex('#CCCCCC');
+
+// Brightness detection
+$darkColor->isDark(); // true
+$darkColor->isLight(); // false
+
+// Relative comparison
+$darkColor->isDarkerThan($lightColor); // true
+$lightColor->isLighterThan($darkColor); // true
+
+// Equality (works across different color types)
+
+/** @var HexColor $hex */
+$hexColor = Colority::fromHex('#FF0000');
+
+$hexColor->isEqualTo(Colority::fromRgb('rgb(255,0,0)'));  // true
 ```
 
 For the `HslColor` and `RgbColor` objects, you also have a method `getArrayValueColor` that will return the value color in array format:

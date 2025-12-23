@@ -37,6 +37,6 @@ final readonly class HexValueColorParser implements ValueColorParser
             throw new InvalidArgumentException('Unknown or invalid value color');
         }
 
-        return $parsedValueColor;
+        return strtoupper($parsedValueColor);
     }
 }
