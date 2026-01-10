@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Tomloprod\Colority\Colors\Color;
 use Tomloprod\Colority\Colors\HexColor;
+use Tomloprod\Colority\Support\Algorithms\ContrastRatioScore;
 
 test('getContrastRatio with #000000 foreground', function (string $hexColor, float $contrastRatioWCAG): void {
     /** @var float $contrastRatio */
@@ -115,4 +116,75 @@ test('getBestForegroundColor with #000000 background and default foregrounds', f
     $bestForegroundColor = $hexColor->getBestForegroundColor();
 
     expect($bestForegroundColor->getValueColor())->toBe('#FFFFFF');
+});
+
+test('getMatchingForegroundColor with light background', function (): void {
+    $backgroundColor = new HexColor('#7CB3D9');
+
+    $foregroundColor = $backgroundColor->getMatchingForegroundColor(ContrastRatioScore::Good);
+
+    expect($backgroundColor->getContrastRatio($foregroundColor))->toBeGreaterThanOrEqual(4.5);
+});
+
+test('getMatchingForegroundColor with dark background', function (): void {
+    $backgroundColor = new HexColor('#1A3A52');
+
+    $foregroundColor = $backgroundColor->getMatchingForegroundColor(ContrastRatioScore::Good);
+
+    expect($backgroundColor->getContrastRatio($foregroundColor))->toBeGreaterThanOrEqual(4.5);
+});
+
+test('getMatchingForegroundColor with Excellent score', function (): void {
+    $backgroundColor = new HexColor('#99CCFF');
+
+    $foregroundColor = $backgroundColor->getMatchingForegroundColor(ContrastRatioScore::Excellent);
+
+    expect($backgroundColor->getContrastRatio($foregroundColor))->toBeGreaterThanOrEqual(7);
+});
+
+test('getMatchingForegroundColor with #000000 background', function (): void {
+    $backgroundColor = new HexColor('#000000');
+
+    $foregroundColor = $backgroundColor->getMatchingForegroundColor();
+
+    expect($backgroundColor->getContrastRatio($foregroundColor))->toBeGreaterThanOrEqual(4.5);
+});
+
+test('getMatchingForegroundColor with #FFFFFF background', function (): void {
+    $backgroundColor = new HexColor('#FFFFFF');
+
+    $foregroundColor = $backgroundColor->getMatchingForegroundColor();
+
+    expect($backgroundColor->getContrastRatio($foregroundColor))->toBeGreaterThanOrEqual(4.5);
+});
+
+test('getMatchingForegroundColor with default score', function (): void {
+    $backgroundColor = new HexColor('#4488CC');
+
+    $foregroundColor = $backgroundColor->getMatchingForegroundColor();
+
+    expect($backgroundColor->getContrastRatio($foregroundColor))->toBeGreaterThanOrEqual(4.5);
+});
+
+test('getMatchingForegroundColor fallback to black or white', function (): void {
+    $midGray = new HexColor('#808080');
+
+    $foregroundColor = $midGray->getMatchingForegroundColor(ContrastRatioScore::Excellent);
+
+    expect($foregroundColor->toHex()->getValueColor())->toBe('#000000');
+});
+
+test('getMatchingForegroundColor with lightnessStep', function (): void {
+    $backgroundColor = new HexColor('#7CB3D9');
+
+    $foregroundColorStep1 = $backgroundColor->getMatchingForegroundColor(ContrastRatioScore::Good, 1);
+
+    $foregroundColorStep20 = $backgroundColor->getMatchingForegroundColor(ContrastRatioScore::Good, 20);
+    $foregroundColorStep20 = $backgroundColor->getMatchingForegroundColor(ContrastRatioScore::Good, 20);
+
+    expect($backgroundColor->getContrastRatio($foregroundColorStep1))->toBeGreaterThanOrEqual(4.5);
+    expect($backgroundColor->getContrastRatio($foregroundColorStep20))->toBeGreaterThanOrEqual(4.5);
+
+    expect($foregroundColorStep20->toHsl()->getArrayValueColor()[2])
+        ->toBeLessThan($foregroundColorStep1->toHsl()->getArrayValueColor()[2]);
 });

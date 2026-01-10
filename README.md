@@ -1,56 +1,104 @@
-<!--<p align="center">
-    <img title="Colority" height="100" src="./docs/colority.png" alt="Colority" />
-</p>-->
+<div align="center">
+  <img title="Colority - Color Engine for PHP" alt="Colority logo" src="./docs/colority.png" width="450">
+  <p><b>Color Engine for PHP</b></p>
+</div>
 
-<p align="center">
-    <p align="center">
-        <a href="https://github.com/tomloprod/colority/actions"><img alt="GitHub Workflow Status (master)" src="https://github.com/tomloprod/colority/actions/workflows/tests.yml/badge.svg"></a>
-        <a href="https://packagist.org/packages/tomloprod/colority"><img alt="Total Downloads" src="https://img.shields.io/packagist/dt/tomloprod/colority"></a>
-        <a href="https://packagist.org/packages/tomloprod/colority"><img alt="Latest Version" src="https://img.shields.io/packagist/v/tomloprod/colority"></a>
-        <a href="https://packagist.org/packages/tomloprod/colority"><img alt="License" src="https://img.shields.io/packagist/l/tomloprod/colority"></a>
-    </p>
-</p>
+<div align="center">
+    <a href="https://www.php.net/"><img alt="PHP >= 8.2" src="https://img.shields.io/badge/PHP-%E2%89%A5 8.2-777BB4?style=flat-square&logoColor=white&labelColor=111827&color=4f5b93&label=PHP"></a>
+    <a href="https://packagist.org/packages/tomloprod/colority"><img alt="Version" src="https://img.shields.io/packagist/v/tomloprod/colority?style=flat-square&label=version&labelColor=111827&color=white"></a>
+    <a href="https://github.com/tomloprod/colority/actions"><img alt="CI" src="https://img.shields.io/github/actions/workflow/status/tomloprod/colority/tests.yml?branch=main&style=flat-square&label=tests&labelColor=111827&color=1a534d"></a>
+    <a href="https://packagist.org/packages/tomloprod/colority"><img alt="Downloads" src="https://img.shields.io/packagist/dt/tomloprod/colority?style=flat-square&label=downloads&labelColor=111827&color=b15356"></a>
+    <a href="https://packagist.org/packages/tomloprod/colority"><img alt="License" src="https://img.shields.io/packagist/l/tomloprod/colority?style=flat-square&label=license&labelColor=111827&color=38543d"></a>
+</div>
 
-------
-## 🎨 **About Colority**
+## **About Colority**
 
-Colority is a lightweight PHP library designed to handle color transformations, validations and manipulations with ease.
+**Colority** is a PHP library for working with colors. It handles conversions between RGB, HSL, Hex, and OKLCH formats, calculates WCAG-compliant contrast ratios, extracts color palettes from images, and more.
 
+## **Features**
 
-It allows you to instantiate concrete objects according to the color format (*RGB, HSL, Hexadecimal*) and convert from one format to another.
+### Getting Started
 
-Additionally, it lets you check if a **background color meets the WCAG 2.0 accessibility standard** regarding the color contrast ratio in text and UI.
+- **[Instantiating Color Objects](#instantiating-color-objects)**
+  - Create RGB, HSL, Hex, and OKLCH color objects from strings or arrays
+  - Auto-detect color format with `parse()` method
 
-Furthermore, it includes multiple functions such as the following:
+- **[Contrast Ratio (WCAG 2.0)](#contrast-ratio-wcag-20-standard)**
+  - **[getBestForegroundColor](#getbestforegroundcolor)**: Pick the best color from a list of candidates
+  - **[getMatchingForegroundColor](#getmatchingforegroundcolor):** Generate a foreground color that matches the background's hue
+  - **[getContrastRatio](#getcontrastratio):** Calculate contrast ratios between colors
+  - **[ContrastRatioScore Enum](#contrastratioscore-enum):** Validate accessibility compliance
 
-- It allows you to **obtain the colors found in an image**
-- Generate the **best foreground color** (*white, black, or from a user-provided list*) for a background color, ensuring the best possible contrast ratio. (*important for improving text visibility on, for example, colored badges*).
-- Generate a **fixed color based on a string.** Useful for generating a color associated with, for example, a username.
-- Allows you to obtain a **random color similar to a given color.**
+- **[Color Validation](#color-validation)**
+  - Parse and validate color strings with type-specific parsers
 
-## **✨ Getting Started**
+- **[Color Conversion](#color-conversion)**
+  - Convert between RGB, HSL, Hexadecimal, and OKLCH formats
+
+### Color Utilities
+
+- **[getImageColors](#getimagecolors)**:   Extract dominant colors from images
+- **[textToColor](#texttocolor)**:   Generate deterministic colors from strings (_usernames, emails, etc._)
+- **[getSimilarColor](#getsimilarcolor)**:   Get random colors in the same palette
+- **[random](#random)**:   Generate completely random colors
+- **[gradient](#gradient)**:   Create smooth color gradients between multiple colors
+
+### Using Colority
+
+- **[Ways of using Colority](#ways-of-using-colority)**
+  - Helper function `colority()` and facade pattern
+
+### Documentation & Resources
+
+- **[API Reference](API.md)**: Complete documentation of all classes and methods
+- **[Installation and Requirements](#installation-and-requirements)**: Get started with Composer
+
+## **Getting Started**
 
 ### Instantiating Color objects
 
 You can convert value colors (*strings or, additionally, depending on the color type, arrays*) to specific `Color` objects.
 
 ```php
-/** @var RgbColor $rgbColor */
+/**
+ * RGB format - Multiple input formats supported
+ * 
+ * @var RgbColor $rgbColor
+ */
 $rgbColor = colority()->fromRgb('rgb(255,255,255)');
-$rgbColor = colority()->fromRgb('255,255,255'); 
-$rgbColor = colority()->fromRgb([255, 255, 255]); 
+$rgbColor = colority()->fromRgb('255,255,255');
+$rgbColor = colority()->fromRgb([255, 255, 255]);
 
-/** @var HexColor $hexColor */
+/** 
+ * Hexadecimal format - With or without hash, shorthand supported
+ * 
+ * @var HexColor $hexColor 
+ */
 $hexColor = colority()->fromHex('#51B389');
-$hexColor = colority()->fromHex('51B389'); 
+$hexColor = colority()->fromHex('51B389');
 $hexColor = colority()->fromHex('#ABC');
 
-/** @var HslColor $hslColor */
+/**
+ * HSL format - Multiple input formats supported
+ * 
+ * @var HslColor $hslColor
+ */
 $hslColor = colority()->fromHsl('hsl(168.31deg, 49.58%, 46.67%)');
-$hslColor = colority()->fromHsl('168.31, 49.58, 46.67'); 
-$hslColor = colority()->fromHsl([168.31, 49.58, 46.67]); 
+$hslColor = colority()->fromHsl('168.31, 49.58, 46.67');
+$hslColor = colority()->fromHsl([168.31, 49.58, 46.67]);
+
+/**
+ * OKLCH format - Multiple input formats supported
+ * 
+ * @var OklchColor $oklchColor
+ */
+$oklchColor = colority()->fromOklch('oklch(0.70 0.11 163)');
+$oklchColor = colority()->fromOklch('0.70 0.11 163');
+$oklchColor = colority()->fromOklch([0.70, 0.11, 163]);
 ```
-If you cannot specify the original format of the value color, you can use the `parse` method. This will detect what type of color it is and instantiate a new object or, if the received string does not match any type of color, it will return `NULL`:
+
+If you cannot specify the original format of the value color, use the `parse()` method. It will auto-detect the color type and return the appropriate `Color` object, or `null` if the format is invalid.
+
 ```php
 /** @var RgbColor|null $rgbColor */
 $rgbColor = colority()->parse('rgb(255,255,255)');
@@ -60,7 +108,15 @@ $hexColor = colority()->parse('#51B389');
 
 /** @var HslColor|null $hslColor */
 $hslColor = colority()->parse('hsl(168.31deg, 49.58%, 46.67%)');
+
+/** @var OklchColor|null $oklchColor */
+$oklchColor = colority()->parse('oklch(0.70 0.11 163)');
+
+// Always returns null for invalid formats
+$invalid = colority()->parse('not-a-color'); // null
 ```
+
+---
 
 ### Contrast ratio (*WCAG 2.0 standard*)
 
@@ -73,13 +129,20 @@ Returns a `Color` object with the most suitable foreground color (*using the Lum
 You can pass an array with `Color` objects as a parameter, so it chooses the foreground color with the best contrast ratio. If no parameter is specified, it will default to white or black.
 
 ```php
-/** @var HexColor $hexColor */
 $hexColor = colority()->fromHex('#51B389');
 
-/** @var HexColor $bestForegroundHexColor (black or white) */
+/**
+ * Automatic choice: Returns black or white, whichever has better contrast
+ * 
+ * @var HexColor $bestForegroundHexColor
+ */
 $bestForegroundHexColor = $hexColor->getBestForegroundColor();
 
-/** @var HexColor $bestForegroundHexColor (#A63F3F, #3FA684 or #6E3FA6) */
+/**
+ * Custom palette: Chooses the best option from your brand colors
+ * 
+ * @var HexColor $bestForegroundHexColor
+ */
 $bestForegroundHexColor = $hexColor->getBestForegroundColor([
     new HexColor('#A63F3F'),
     new HexColor('#3FA684'),
@@ -92,19 +155,71 @@ $bestForegroundHexColor = $hexColor->getBestForegroundColor([
 Returns the contrast ratio (*higher is better contrast, lower is worse*) between the color invoking this method and the color passed as a parameter. If no color is passed as a parameter, the contrast ratio against black as foreground will be determined.
 
 ```php
-/** @var HexColor $hexColor */
 $hexColor = colority()->fromHex('#51B389');
 
-/** @var float $contrastRatio Contrast ratio with black as the foreground color. */
+/**
+ * Contrast ratio with black (default)
+ * 
+ * @var float $contrastRatio
+ */
 $contrastRatio = $hexColor->getContrastRatio();
 
-/** @var float $contrastRatio Contrast ratio with #3FA684 as the foreground color. */
+/**
+ * Contrast ratio with a specific foreground color
+ * 
+ * @var float $contrastRatio
+ */
 $contrastRatio = $hexColor->getContrastRatio(new HexColor('#3FA684'));
 ```
 
-#### AA & AAA WCAG levels
+**Contrast ratio scale:**
+- **1.0**: No contrast (same color)
+- **3.0**: Minimum for UI components (WCAG AA)
+- **4.5**: Minimum for normal text (WCAG AA)
+- **7.0**: Enhanced contrast for normal text (WCAG AAA)
+- **21.0**: Maximum contrast (black on white)
 
-Below we show you how to check if a contrast ratio meets WCAG AA and AAA levels using `Tomloprod\Colority\Support\Algorithms\ContrastRatioScore`.
+#### getMatchingForegroundColor
+
+Generates a foreground color that **preserves the background's hue** while meeting WCAG contrast requirements.
+
+> **Difference from `getBestForegroundColor`:**
+> - `getBestForegroundColor()` picks the best color from a list of candidates (defaults to black/white)
+> - `getMatchingForegroundColor()` generates a new color by adjusting lightness while keeping the same hue
+
+```php
+use Tomloprod\Colority\Support\Algorithms\ContrastRatioScore;
+
+$backgroundColor = colority()->fromHex('#336699');
+
+// AA level by default
+$foregroundColor = $backgroundColor->getMatchingForegroundColor();
+
+// AAA level for enhanced contrast
+$foregroundColor = $backgroundColor->getMatchingForegroundColor(ContrastRatioScore::Excellent);
+
+// With custom lightness step (faster but less precise)
+$foregroundColor = $backgroundColor->getMatchingForegroundColor(
+    targetScore: ContrastRatioScore::Good, 
+    lightnessStep: 5 // the default value is 1
+);
+```
+
+**Optional parameters:**
+- `targetScore` *(default: ContrastRatioScore::Good)*: The desired contrast level. See [ContrastRatioScore Enum](#contrastratioscore-enum).
+- `lightnessStep` *(default: 1)*: The amount of lightness points (1-100) to jump in each iteration while searching for a matching color. Larger values are faster but less precise.
+
+#### ContrastRatioScore Enum
+
+The `Tomloprod\Colority\Support\Algorithms\ContrastRatioScore` enum defines the standard contrast levels and provides helper methods to validate them.
+
+**Available contrast levels:**
+- `ContrastRatioScore::Excellent`: 7:1 ratio (WCAG AAA for normal text)
+- `ContrastRatioScore::Good` *(default)*: 4.5:1 ratio (WCAG AA for normal text)
+- `ContrastRatioScore::Acceptable`: 3:1 ratio (WCAG AA for large text/UI).
+- `ContrastRatioScore::Insufficient`
+
+You can also use the enum's static methods to manually check if a specific contrast ratio meets WCAG levels:
 
 ```php
 /** @var HexColor $hexColor */
@@ -143,6 +258,7 @@ $passsesAAALevelForNormalText = ContrastRatioScore::passesTextAAALevel(
     contrastRatio: $contrastRatio,
     largeText: false
 );
+
 /**
  * AA Level for Graphical Objects and User Interface Components
  */
@@ -152,37 +268,49 @@ $passsesAALevelForUI = ContrastRatioScore::passesUIAALevel(
 
 ```
 
+---
 
 ### Color validation
+
 The concrete `Color` classes have a static method called `getParser()` which returns an instance of `ValueColorParser`.
 
 The `parse` method returns a string with the value color adapted to work correctly with Colority or throws an `InvalidArgumentException` when it's not valid.
 
 ```php
-/** @var ValueColorParser $hexParser */
+use Tomloprod\Colority\Colors\HexColor;
+use InvalidArgumentException;
+
 $hexParser = HexColor::getParser();
 
-// will throw InvalidArgumentException
-$valueColor = $hexParser->parse('Not a valid value color'); 
+try {
 
-// will return #FFFFFF
+    // This will throw InvalidArgumentException
+    $valueColor = $hexParser->parse('Not a valid value color');
+
+} catch (InvalidArgumentException $e) {
+    // Handle invalid color format
+}
+
+// Normalize shorthand: Returns "#FFFFFF"
 $valueColor = $hexParser->parse('#FFF');
 ```
 
 You can use the specific parser for any type of color:
 
 ```php
-$hslParser = HslColor::getParser();
+use Tomloprod\Colority\Colors\{HexColor, HslColor, RgbColor, OklchColor};
 
-$rgbParser = RgbColor::getParser();
-
-$hexParser = HexColor::getParser();
+$hexParser = HexColor::getParser(); // Validates Hex format
+$hslParser = HslColor::getParser(); // Validates HSL format
+$rgbParser = RgbColor::getParser(); // Validates RGB format
+$oklchParser = OklchColor::getParser(); // Validates OKLCH format
 ```
 
 ### Color conversion
+
 Colority allows you to convert a Color object to any other `Color` object of the desired format.
+
 ```php
-/** @var HexColor|null $hexColor */
 $hexColor = colority()->fromHex('#51B389');
 
 /** @var HexColor $hexColor */
@@ -193,7 +321,14 @@ $rgbColor = $hexColor->toRgb();
 
 /** @var HslColor $hslColor */
 $hslColor = $hexColor->toHsl();
+
+/** @var OklchColor $oklchColor */
+$oklchColor = $hexColor->toOklch();
 ```
+
+**Note:** Conversions between RGB, HSL, and Hex are lossless. Conversions involving OKLCH may be lossy (due to gamut clipping—OKLCH can represent colors outside the sRGB gamut that must be clipped to the nearest displayable color).
+
+---
 
 ### Color utilities
 
@@ -215,49 +350,75 @@ $imageColors = colority()->getImageColors(
 
 #### textToColor
 
-Generate a fixed color based on a string.
+Generate a deterministic color based on any string. Same input always produces the same color.
 
 ![getSimilarColor gif](./docs/example-text-to-color.gif)
 
 ```php
-/** @var HslColor $hslColor */
+/**
+ * Basic usage - generates a unique color from text
+ * 
+ * @var HslColor $hslColor
+ */
 $hslColor = colority()->textToColor("Hi, I'm Tomás");
 ```
 
-You can also pass a `fromColor`. In that case, only colors within the same color range as that color will be generated.
+**Constrain to a color range:**
+
+Pass a `fromColor` to generate only colors within the same hue range.
 
 ```php
-/** @var HslColor $hslColor - Only colors within the grayscale range. */
-$hslColor = colority()->textToColor("Hi, I'm Tomás", colority()->fromHex('#CCC'));
-```
-
-On the other hand, if you pass both `fromColor` and `toColor`, the method performs a **linear interpolation** between the two colors. The same text will always map to the same position in the gradient between the colors, creating a deterministic color that falls somewhere on the line connecting the two provided colors.
-
-```php
-/** @var HslColor $hslColor - Color interpolated between light green and dark teal */
+/**
+ * Only grayscale colors will be generated
+ * 
+ * @var HslColor $hslColor
+ */
 $hslColor = colority()->textToColor(
-    "Hi, I'm Tomás",
-    colority()->fromHex('#85d5a4'), // Light green (start point)
-    colority()->fromHex('#165a59')  // Dark teal (end point)
+    "Hi, I'm Tomás", 
+    colority()->fromHex('#CCC')
 );
 ```
 
-This interpolation approach is particularly useful for creating **consistent color themes** where you want all generated colors to harmonize within a specific palette range.
+**Interpolate between two colors:**
 
-> **🧙 Advise** 
-> Useful for generating a color associated with, for example, **a username, mail address, etc**, since a string will always return the same color.
+Pass both `fromColor` and `toColor` to perform **linear interpolation**. The same text always maps to the same position in the gradient.
+
+```php
+/**
+ * Color will fall somewhere between light green and dark teal
+ * 
+ * @var HslColor $hslColor
+ */
+$hslColor = colority()->textToColor(
+    "Hi, I'm Tomás",
+    colority()->fromHex('#85d5a4'), // Start: Light green
+    colority()->fromHex('#165a59')  // End: Dark teal
+);
+```
 
 #### getSimilarColor
-Allows you to obtain a random color similar (*in the same color palette*) to a given color.
+
+Generate a random color similar to a given color (*within the same color palette*).
 
 ![getSimilarColor gif](./docs/example-get-similar-color.gif)
 
 ```php
-/** @var HexColor|null $hexColor */
 $hexColor = colority()->fromHex('#51B389');
 
-/** @var HexColor|null $similarHexColor */
+/**
+ * Get a random similar color (default variation ranges)
+ * 
+ * @var HexColor $similarHexColor
+ */
 $similarHexColor = colority()->getSimilarColor($hexColor);
+
+// Fine-tune the similarity with custom ranges
+$similarHexColor = colority()->getSimilarColor(
+    $hexColor,
+    hueRange: 20, // +- 20 degrees on color wheel
+    saturationRange: 5, // +- 5% saturation
+    lightnessRange: 5 // +- 5% lightness
+);
 ```
 
 #### random
@@ -265,160 +426,83 @@ $similarHexColor = colority()->getSimilarColor($hexColor);
 Generates a completely random color.
 
 ```php
-/** @var HslColor $randomColor */
+/**
+ * Returns a random HSL color
+ * 
+ * @var HslColor $randomColor
+ */
 $randomColor = colority()->random();
+
+// And, if you want, convert to your preferred format
+$hexRandom = $randomColor->toHex();
 ```
 
 #### gradient
 
-Generates a gradient of colors between multiple colors.
+Generates a smooth gradient of colors between multiple color stops.
 
 ```php
-/** @var array<HexColor> $gradient */
+/**
+ * Create a 10-step gradient from red -> green -> blue
+ * 
+ * @var array<HexColor> $gradient
+ */
 $gradient = colority()->gradient(
     colors: [
         colority()->fromHex('#ff0000'), // Red
         colority()->fromHex('#00ff00'), // Green
-        colority()->fromHex('#0000ff')  // Blue
+        colority()->fromHex('#0000ff') // Blue
     ],
     steps: 10
 );
 ```
 
+This returns an array of 10 `HexColor` objects.
+
+---
 
 ### Ways of using Colority
-You can use Colority either with the aliases `colority()` 
+
+You can use Colority either with the helper function `colority()`:
+
 ```php
-/** @var HexColor $hexColor */
+use Tomloprod\Colority\Colors\HexColor;
+
+/**
+ * Using the helper function
+ * 
+ * @var HexColor $hexColor
+ */
 $hexColor = colority()->fromHex('#CCC');
 ```
 
 or by directly invoking the static methods of the `Colority` facade:
 
 ```php
-/** @var HexColor $hexColor */
+use Tomloprod\Colority\Support\Facades\Colority;
+use Tomloprod\Colority\Colors\HexColor;
+
+/**
+ * Using the facade directly
+ * 
+ * @var HexColor $hexColor
+ */
 $hexColor = Colority::fromHex('#CCC');
 ```
-You decide how to use it 🙂
+
+Both approaches are equivalent.
 
 
-## **🧱 Architecture**
-Colority is composed of several types of elements. Below are some features of each of these elements.
+## **API Reference**
 
-### `Colority`
+Colority provides a comprehensive API through its facade and color classes.
 
-`Tomloprod\Colority\Support\Facades\Colority` is a facade that acts as a simplified interface for using the rest of the Colority elements.
-
-#### Methods
-```php
-
-Colority::parse(string $valueColor): Color|null
-
-Colority::fromHex(string $hexValue): HexColor
-
-Colority::fromRgb(string|array<int> $rgbValue): RgbColor
-
-Colority::fromHsl(string|array<float> $hslValue): HslColor
-
-Colority::textToColor(string $text, ?Color $fromColor = null, ?Color $toColor = null): HslColor
-
-Colority::getSimilarColor(Color $color, int $hueRange = 30, int $saturationRange = 10, int $lightnessRange = 10): Color
-
-Colority::random(): HslColor
-
-Colority::gradient(array<Color> $colors, int $steps = 5): array<HexColor>
-```
-
-### `Color`
-All concrete color classes extend the abstract class `Color`. Concrete color classes:
-- `Tomloprod\Colority\Colors\HexColor`
-- `Tomloprod\Colority\Colors\HslColor`
-- `Tomloprod\Colority\Colors\RgbColor`
-
-#### Methods
-
-```php
-/** @var HexColor $hexColor */
-$hexColor = Colority::fromHex('#CCCCCC');
-
-$hexColor->toHex(): HexColor;
-$hexColor->toRgb(): RgbColor;
-$hexColor->toHsl(): HslColor;
-
-// Returns the value color in string format. Example: #CCCCCC
-$hexColor->getValueColor(): string;
-
-// Compare two colors for equality
-$hexColor->isEqualTo(Color $color): bool;
-
-// Check if the color is dark
-$hexColor->isDark(): bool;
-
-// Check if the color is light
-$hexColor->isLight(): bool;
-
-// Check if this color is darker than another color
-$hexColor->isDarkerThan(Color $color): bool;
-
-// Check if this color is lighter than another color
-$hexColor->isLighterThan(Color $color): bool;
-
-// Get the relative luminance (0.0 to 1.0) according to WCAG 2.0
-$hexColor->getLuminance(): float;
-```
-
-#### Color comparison examples
-
-```php
-/** @var HexColor $darkColor */
-$darkColor = Colority::fromHex('#333333');
-
-/** @var HexColor $lightColor */
-$lightColor = Colority::fromHex('#CCCCCC');
-
-// Brightness detection
-$darkColor->isDark(); // true
-$darkColor->isLight(); // false
-
-// Relative comparison
-$darkColor->isDarkerThan($lightColor); // true
-$lightColor->isLighterThan($darkColor); // true
-
-// Equality (works across different color types)
-
-/** @var HexColor $hex */
-$hexColor = Colority::fromHex('#FF0000');
-
-$hexColor->isEqualTo(Colority::fromRgb('rgb(255,0,0)'));  // true
-```
-
-For the `HslColor` and `RgbColor` objects, you also have a method `getArrayValueColor` that will return the value color in array format:
-
-```php
-/** @var RgbColor $rgbColor */
-$rgbColor = Colority::fromRgb('255,255,255');
-
-/** @var array $arrayValueColor [255,255,255] */
-$arrayValueColor = $rgbColor->getArrayValueColor();
-```
-
-On the other hand, the `HslColor` object has an additional method called `getValueColorWithMeasureUnits`, which returns the value color, but with units of measurement (*useful for, for example, using it in a CSS style*):
-```php
-/** @var HslColor $hslColor */
-$hslColor = Colority::fromHsl('hsl(32.4, 60.48, 51.37)');
-
-/** @var string $valueColorWithMeasureUnits hsl(32.4deg,60.48%,51.37%) */
-$valueColorWithMeasureUnits = $hslColor->getValueColorWithMeasureUnits();
-
-/** @var string $valueColor hsl(32.4,60.48,51.37) */
-$valueColor = $hslColor->getValueColor(): string;
-
-```
+**[View complete API documentation](API.md)**
 
 
-## **🚀 Installation & Requirements**
+## **Installation and Requirements**
 
-> **Requires [PHP 8.2+](https://php.net/releases/)**
+#### **Requires [PHP 8.2+](https://php.net/releases/)**
 
 You may use [Composer](https://getcomposer.org) to install Colority into your PHP project:
 
@@ -426,7 +510,7 @@ You may use [Composer](https://getcomposer.org) to install Colority into your PH
 composer require tomloprod/colority
 ```
 
-## **🧑‍🤝‍🧑 Contributing**
+## **Contributing**
 
 Contributions are welcome, and are accepted via pull requests.
 Please [review these guidelines](./CONTRIBUTING.md) before submitting any pull requests.

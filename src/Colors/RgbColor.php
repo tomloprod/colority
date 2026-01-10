@@ -6,6 +6,7 @@ namespace Tomloprod\Colority\Colors;
 
 use InvalidArgumentException;
 use Tomloprod\Colority\Contracts\ValueColorParser;
+use Tomloprod\Colority\Support\ColorSpaceConverter;
 use Tomloprod\Colority\Support\Parsers\RgbValueColorParser;
 
 final class RgbColor extends Color
@@ -105,5 +106,31 @@ final class RgbColor extends Color
     public function toRgb(): self
     {
         return $this;
+    }
+
+    public function toOklch(): OklchColor
+    {
+        [$r, $g, $b] = $this->getArrayValueColor();
+
+        // sRGB -> Linear RGB
+        $rLinear = ColorSpaceConverter::srgbToLinear($r / 255);
+        $gLinear = ColorSpaceConverter::srgbToLinear($g / 255);
+        $bLinear = ColorSpaceConverter::srgbToLinear($b / 255);
+
+        // Linear RGB -> XYZ
+        [$x, $y, $z] = ColorSpaceConverter::linearRgbToXyz($rLinear, $gLinear, $bLinear);
+
+        // XYZ -> OKLab
+        [$L, $a, $bLab] = ColorSpaceConverter::xyzToOklab($x, $y, $z);
+
+        // OKLab -> OKLCH (cartesian to polar)
+        $C = sqrt($a * $a + $bLab * $bLab);
+        $H = atan2($bLab, $a) * 180 / M_PI;
+
+        if ($H < 0) {
+            $H += 360;
+        }
+
+        return new OklchColor([round($L, 6), round($C, 6), round($H, 2)]);
     }
 }
