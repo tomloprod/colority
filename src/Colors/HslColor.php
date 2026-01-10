@@ -107,4 +107,9 @@ final class HslColor extends Color
     {
         return $this;
     }
+
+    public function toOklch(): OklchColor
+    {
+        return $this->toRgb()->toOklch();
+    }
 }

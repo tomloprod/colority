@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Tomloprod\Colority\Colors\HexColor;
 use Tomloprod\Colority\Colors\HslColor;
+use Tomloprod\Colority\Colors\OklchColor;
 use Tomloprod\Colority\Colors\RgbColor;
 
 test('toRgb()', function (string $hexValueColor, string $rgbValueColor): void {
@@ -46,3 +47,19 @@ test('toHex()', function (string $hexValueColor): void {
     expect($hexColor->getValueColor())->toBe($hexValueColor);
 
 })->with(['#000000', '#CCCCCC', '#FFEEFF']);
+
+test('toOklch()', function (string $hexValueColor, string $oklchValueColor): void {
+    $hexColor = new HexColor($hexValueColor);
+
+    $oklchColor = $hexColor->toOklch();
+
+    expect($oklchColor)->toBeInstanceOf(OklchColor::class);
+
+    expect($oklchColor->getValueColor())->toBe($oklchValueColor);
+})->with([
+    ['#000000', 'oklch(0 0 0)'],
+    ['#FF0000', 'oklch(0.627987 0.25764 29.23)'],
+    ['#21695A', 'oklch(0.472099 0.074683 176.36)'],
+    ['#8D31B3', 'oklch(0.506524 0.201529 313.98)'],
+    ['#CE8938', 'oklch(0.686088 0.126666 66.78)'],
+]);

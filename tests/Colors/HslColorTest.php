@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Tomloprod\Colority\Colors\HexColor;
 use Tomloprod\Colority\Colors\HslColor;
+use Tomloprod\Colority\Colors\OklchColor;
 use Tomloprod\Colority\Colors\RgbColor;
 
 test('toHex()', function (string $hslValueColor, string $hexValueColor): void {
@@ -49,4 +50,20 @@ test('toHsl()', function (string $hslValueColor): void {
 
 })->with([
     'hsl(0deg,0%,0%)', 'hsl(0deg,100%,50%)', 'hsl(167.5deg,52.17%,27.06%)', 'hsl(282.46deg,57.02%,44.71%)', 'hsl(32.4deg,60.48%,51.37%)',
+]);
+
+test('toOklch()', function (string $hslValueColor, string $oklchValueColor): void {
+    $hslColor = new HslColor($hslValueColor);
+
+    $oklchColor = $hslColor->toOklch();
+
+    expect($oklchColor)->toBeInstanceOf(OklchColor::class);
+
+    expect($oklchColor->getValueColor())->toBe($oklchValueColor);
+})->with([
+    ['hsl(0,0,0)', 'oklch(0 0 0)'],
+    ['hsl(0deg,100%,50)', 'oklch(0.627987 0.25764 29.23)'],
+    ['hsl(167.5,52.17,27.06)', 'oklch(0.472099 0.074683 176.36)'],
+    ['hsl(282.46deg,57.02%,44.71)', 'oklch(0.506524 0.201529 313.98)'],
+    ['hsl(32.4,60.48,51.37)', 'oklch(0.686088 0.126666 66.78)'],
 ]);

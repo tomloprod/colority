@@ -45,4 +45,9 @@ final class HexColor extends Color
     {
         return $this;
     }
+
+    public function toOklch(): OklchColor
+    {
+        return $this->toRgb()->toOklch();
+    }
 }

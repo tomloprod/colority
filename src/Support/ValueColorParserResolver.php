@@ -8,6 +8,7 @@ use InvalidArgumentException;
 use Tomloprod\Colority\Colors\Color;
 use Tomloprod\Colority\Colors\HexColor;
 use Tomloprod\Colority\Colors\HslColor;
+use Tomloprod\Colority\Colors\OklchColor;
 use Tomloprod\Colority\Colors\RgbColor;
 use Tomloprod\Colority\Contracts\ValueColorParser;
 
@@ -23,6 +24,7 @@ final readonly class ValueColorParserResolver
             HexColor::class,
             HslColor::class,
             RgbColor::class,
+            OklchColor::class,
         ]
     ) {}
 

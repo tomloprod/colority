@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Tomloprod\Colority\Colors\HexColor;
 use Tomloprod\Colority\Colors\HslColor;
+use Tomloprod\Colority\Colors\OklchColor;
 use Tomloprod\Colority\Colors\RgbColor;
 use Tomloprod\Colority\Services\ColorityManager;
 
@@ -212,6 +213,40 @@ test('fromHsl() with invalid value color throws InvalidArgumentException', funct
     expect($colority->parse($hslColor))->toBeNull();
 
 })->with(['xxx(0,0,0)', 't,o,m', '(-255,-255,-255)', '0,0,0,0', 'hsl(0,0,0,0)']);
+
+/**
+ * OKLCH
+ */
+test('fromOklch() with right value color returns OklchColor instance', function (string $oklchColor): void {
+    $colority = ColorityManager::instance();
+
+    expect(fn (): mixed => $colority->fromOklch($oklchColor))->not()->toThrow(InvalidArgumentException::class, 'Unknown or invalid value color');
+
+    expect($colority->fromOklch($oklchColor))->toBeInstanceOf(OklchColor::class);
+
+    expect($colority->parse($oklchColor))->toBeInstanceOf(OklchColor::class);
+
+})->with(['oklch(0.5 0.1 180)', 'oklch(0.7 0.15 120)', 'oklch(0.6 0.2 90)', 'oklch(0.8 0.05 240)', 'oklch(1 0 0)', 'oklch(0 0 360)']);
+
+test('fromOklch() with array right value color returns OklchColor instance', function (string $oklchColor): void {
+    $colority = ColorityManager::instance();
+
+    $oklchColor = explode(' ', $oklchColor);
+
+    expect(fn (): mixed => $colority->fromOklch($oklchColor))->not()->toThrow(InvalidArgumentException::class, 'Unknown or invalid value color');
+
+    expect($colority->fromOklch($oklchColor))->toBeInstanceOf(OklchColor::class);
+
+})->with(['0.5 0.1 180', '0.7 0.15 120', '0.6 0.2 90']);
+
+test('fromOklch() with invalid value color throws InvalidArgumentException', function (string $oklchColor): void {
+    $colority = ColorityManager::instance();
+
+    expect(fn (): mixed => $colority->fromOklch($oklchColor))->toThrow(InvalidArgumentException::class, 'Unknown or invalid value color');
+
+    expect($colority->parse($oklchColor))->toBeNull();
+
+})->with(['not-a-color', 'oklch()', 'oklch(0.5)', 'oklch(0.5 0.1)', 'oklch(2 0.1 180)', 'oklch(0.5 2 180)', 'oklch(0.5 0.1 400)']);
 
 /**
  * Gradient

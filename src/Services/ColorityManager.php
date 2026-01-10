@@ -8,6 +8,7 @@ use Exception;
 use Tomloprod\Colority\Colors\Color;
 use Tomloprod\Colority\Colors\HexColor;
 use Tomloprod\Colority\Colors\HslColor;
+use Tomloprod\Colority\Colors\OklchColor;
 use Tomloprod\Colority\Colors\RgbColor;
 use Tomloprod\Colority\Concerns\ExtractsColorsFromImage;
 use Tomloprod\Colority\Support\ValueColorParserResolver;
@@ -228,5 +229,13 @@ final class ColorityManager
     public function fromHsl(string|array $hslValue): HslColor
     {
         return new HslColor($hslValue);
+    }
+
+    /**
+     * @param  string|array<float>  $oklchValue
+     */
+    public function fromOklch(string|array $oklchValue): OklchColor
+    {
+        return new OklchColor($oklchValue);
     }
 }
