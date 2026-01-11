@@ -37,6 +37,7 @@
 
 ### Color Utilities
 
+- **[Color Adjustments](#color-adjustments)**: Adjust brightness and saturation
 - **[getImageMostCommonColor](#getimagemostcommoncolor)**: Get the single most common color in an image
 - **[getImageColors](#getimagecolors)**: Extract representative colors from images using K-Means clustering
 - **[getImageDominantColors](#getimagedominantcolors)**: Extract dominant colors by pixel frequency with metadata
@@ -333,6 +334,32 @@ $oklchColor = $hexColor->toOklch();
 ---
 
 ### Color utilities
+
+#### Color Adjustments
+
+Adjust the brightness (lightness) and saturation of any color. All methods return an `HslColor` that you can convert as needed.
+
+```php
+$color = colority()->fromHex('#3498db');
+
+// Adjust brightness
+$color->lighter(); // 10% brighter (default)
+$color->lighter(20); // 20% brighter
+$color->darker(); // 10% darker (default)
+$color->darker(15); // 15% darker
+
+// Adjust saturation
+$color->saturate(); // 10% more saturated
+$color->desaturate(25); // 25% less saturated
+
+// Direct adjustment (positive or negative)
+$color->adjustLightness(30); // +30% lightness
+$color->adjustSaturation(-20); // -20% saturation
+
+// Convert result to any format
+$color->lighter()->toHex(); // Get as HexColor
+$color->darker()->toRgb(); // Get as RgbColor
+```
 
 #### getImageMostCommonColor
 

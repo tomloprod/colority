@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Tomloprod\Colority\Colors;
 
+use Tomloprod\Colority\Concerns\AdjustsColorValues;
 use Tomloprod\Colority\Concerns\ResolvesContrastRatioColor;
 use Tomloprod\Colority\Contracts\TransformableColor;
 use Tomloprod\Colority\Contracts\ValueColorParser;
@@ -11,6 +12,7 @@ use Tomloprod\Colority\Support\Algorithms\LuminosityContrastRatio;
 
 abstract class Color implements TransformableColor
 {
+    use AdjustsColorValues;
     use ResolvesContrastRatioColor;
 
     protected string $valueColor;
