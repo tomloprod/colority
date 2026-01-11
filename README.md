@@ -37,7 +37,9 @@
 
 ### Color Utilities
 
-- **[getImageColors](#getimagecolors)**:   Extract dominant colors from images
+- **[getImageMostCommonColor](#getimagemostcommoncolor)**: Get the single most common color in an image
+- **[getImageColors](#getimagecolors)**: Extract representative colors from images using K-Means clustering
+- **[getImageDominantColors](#getimagedominantcolors)**: Extract dominant colors by pixel frequency with metadata
 - **[textToColor](#texttocolor)**:   Generate deterministic colors from strings (_usernames, emails, etc._)
 - **[getSimilarColor](#getsimilarcolor)**:   Get random colors in the same palette
 - **[random](#random)**:   Generate completely random colors
@@ -332,6 +334,17 @@ $oklchColor = $hexColor->toOklch();
 
 ### Color utilities
 
+#### getImageMostCommonColor
+
+Returns the single most common color in an image based on pixel frequency.
+
+```php
+/** @var RgbColor $mostCommon */
+$mostCommon = colority()->getImageMostCommonColor(__DIR__.'/photo.png');
+
+echo $mostCommon->toHex()->getValueColor(); // e.g., "#3A7B5C"
+```
+
 #### getImageColors
 
 It allows you to obtain the colors detected in an image. As the first argument, the path to the image must be provided. 
@@ -345,6 +358,38 @@ It has an optional second parameter (default is 5) that specifies the number of 
 $imageColors = colority()->getImageColors(
     imagePath: __DIR__.'/image-colors.png',
     desiredNumColors: 10
+);
+```
+
+#### getImageDominantColors
+
+Extracts the most dominant colors based on **pixel frequency**, returning detailed metadata for each color.
+
+```php
+use Tomloprod\Colority\Support\Dtos\ImageColorFrequency;
+
+/** @var array<ImageColorFrequency> $dominantColors */
+$dominantColors = colority()->getImageDominantColors(
+    imagePath: __DIR__.'/photo.png',
+    desiredNumColors: 5
+);
+
+foreach ($dominantColors as $frequency) {
+    $frequency->color; // RgbColor object
+    $frequency->percentage; // e.g., 45.2
+    $frequency->pixelCount; // e.g., 4520
+}
+```
+
+**Optional parameter:**
+- `similarityThreshold` *(default: 50)*: Minimum RGB distance (0-441) to consider colors as distinct. Higher values filter out more similar colors.
+
+```php
+// More aggressive filtering (groups similar shades)
+$dominantColors = colority()->getImageDominantColors(
+    imagePath: __DIR__.'/photo.png',
+    desiredNumColors: 5,
+    similarityThreshold: 80
 );
 ```
 

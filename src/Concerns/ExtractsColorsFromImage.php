@@ -7,26 +7,73 @@ namespace Tomloprod\Colority\Concerns;
 use Exception;
 use GdImage;
 use Tomloprod\Colority\Colors\RgbColor;
+use Tomloprod\Colority\Support\Dtos\ImageColorFrequency;
 
 trait ExtractsColorsFromImage
 {
     // @codeCoverageIgnoreStart
 
-    /** @internal Experiment to extract the most common color */
+    /**
+     * Returns the most common color in an image based on pixel frequency.
+     */
     public function getImageMostCommonColor(string $imagePath): RgbColor
     {
+        return $this->getImageDominantColors($imagePath, 1)[0]->color;
+    }
+
+    /**
+     * Returns the most dominant colors in an image based on pixel frequency.
+     *
+     * Colors that are perceptually too similar to already-selected colors
+     * are skipped based on the RGB Euclidean distance threshold.
+     *
+     * @param  int  $similarityThreshold  Minimum RGB distance to consider colors as distinct (0-441). Default 50.
+     * @return array<ImageColorFrequency>
+     */
+    public function getImageDominantColors(string $imagePath, int $desiredNumColors = 5, int $similarityThreshold = 50): array
+    {
         $imageColors = $this->extractColorsFromImage($imagePath);
+        $totalPixels = count($imageColors);
 
-        // Count the frequency of each color
-        $colorFrequencies = array_count_values(array_map('serialize', $imageColors));
+        $similarityThreshold = max(0, min(441, $similarityThreshold));
 
-        // Find the most common color and its frequency
+        // Count the frequency of each color using a simple string key
+        $colorFrequencies = [];
+
+        foreach ($imageColors as $color) {
+            $key = "{$color[0]},{$color[1]},{$color[2]}";
+
+            $colorFrequencies[$key] = ($colorFrequencies[$key] ?? 0) + 1;
+        }
+
+        // Sort by frequency (most common first)
         arsort($colorFrequencies);
 
-        /** @var array<int> $mostCommonColor */
-        $mostCommonColor = unserialize((string) key($colorFrequencies));
+        $result = [];
+        $selectedRgbColors = [];
 
-        return colority()->fromRgb($mostCommonColor);
+        foreach ($colorFrequencies as $key => $pixelCount) {
+
+            if (count($result) >= $desiredNumColors) {
+                break;
+            }
+
+            $rgb = array_map('intval', explode(',', $key));
+
+            // Skip if too similar to an already selected color
+            if ($this->isSimilarToAny($rgb, $selectedRgbColors, $similarityThreshold)) {
+                continue;
+            }
+
+            $selectedRgbColors[] = $rgb;
+            $result[] = new ImageColorFrequency(
+                color: $this->fromRgb($rgb),
+                percentage: round(($pixelCount / $totalPixels) * 100, 2),
+                pixelCount: $pixelCount,
+            );
+        }
+
+        return $result;
     }
 
     /**
@@ -126,6 +173,27 @@ trait ExtractsColorsFromImage
         }
 
         return $clusterColors;
+    }
+
+    /**
+     * @param  array<int>  $rgb
+     * @param  array<array<int>>  $selectedColors
+     */
+    private function isSimilarToAny(array $rgb, array $selectedColors, int $threshold): bool
+    {
+        foreach ($selectedColors as $selected) {
+            $distance = sqrt(
+                ($rgb[0] - $selected[0]) ** 2 +
+                ($rgb[1] - $selected[1]) ** 2 +
+                ($rgb[2] - $selected[2]) ** 2
+            );
+
+            if ($distance < $threshold) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
