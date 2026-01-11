@@ -12,6 +12,8 @@ Complete API documentation for Colority's facades, classes, and methods.
 | **Create from HSL** | `fromHsl()` | `colority()->fromHsl([180, 50, 50])` |
 | **Create from OKLCH** | `fromOklch()` | `colority()->fromOklch([0.70, 0.11, 163])` |
 | **Convert formats** | `toHex()`, `toRgb()`, `toHsl()`, `toOklch()` | `$color->toHex()` |
+| **Adjust brightness** | `lighter()`, `darker()` | `$color->lighter()->toHex()` |
+| **Adjust saturation** | `saturate()`, `desaturate()` | `$color->saturate()` |
 | **Generate from text** | `textToColor()` | `colority()->textToColor('username')` |
 | **Best contrast color** | `getBestForegroundColor()` | `$bg->getBestForegroundColor()` |
 | **Get contrast ratio** | `getContrastRatio()` | `$color->getContrastRatio($other)` |
@@ -263,6 +265,35 @@ $equal = $hex->isEqualTo($rgb); // true
 
 // Luminance
 $luminance = $hex->getLuminance(); // returns float between 0.0 and 1.0
+```
+
+#### Color Adjustment Methods
+
+```php
+// Adjust lightness (brightness)
+$color->adjustLightness(float $percent): HslColor // +- percentage
+$color->lighter(float $amount = 10): HslColor // Increase lightness
+$color->darker(float $amount = 10): HslColor // Decrease lightness
+
+// Adjust saturation
+$color->adjustSaturation(float $percent): HslColor // +- percentage
+$color->saturate(float $amount = 10): HslColor // Increase saturation
+$color->desaturate(float $amount = 10): HslColor // Decrease saturation
+```
+
+**Example:**
+```php
+$hex = Colority::fromHex('#3498db');
+
+// All methods return HslColor - chain with conversion as needed
+$lighter = $hex->lighter()->toHex(); // Brighter HexColor
+$darker = $hex->darker(20)->toRgb(); // 20% darker as RgbColor
+$vivid = $hex->saturate()->toHsl(); // More saturated HslColor
+$muted = $hex->desaturate(30); // 30% less saturated
+
+// Direct adjustments
+$adjusted = $hex->adjustLightness(-15); // 15% darker
+$adjusted = $hex->adjustSaturation(25); // 25% more saturated
 ```
 
 #### Contrast & Accessibility Methods
