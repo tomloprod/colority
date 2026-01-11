@@ -18,6 +18,8 @@ Complete API documentation for Colority's facades, classes, and methods.
 | **Random color** | `random()` | `colority()->random()` |
 | **Color gradient** | `gradient()` | `colority()->gradient($colors, 10)` |
 | **Image colors** | `getImageColors()` | `colority()->getImageColors($path, 5)` |
+| **Most common color** | `getImageMostCommonColor()` | `colority()->getImageMostCommonColor($path)` |
+| **Dominant colors** | `getImageDominantColors()` | `colority()->getImageDominantColors($path, 5)` |
 
 ## Table of Contents
 
@@ -102,11 +104,23 @@ Colority::gradient(
     int $steps = 5
 ): array<HexColor>
 
-// Get dominant colors from image
+// Get representative colors from image
 Colority::getImageColors(
     string $imagePath,
     int $desiredNumColors = 5
 ): array<RgbColor>
+
+// Get the single most common color in an image
+Colority::getImageMostCommonColor(
+    string $imagePath
+): RgbColor
+
+// Get dominant colors from image with frequency metadata
+Colority::getImageDominantColors(
+    string $imagePath,
+    int $desiredNumColors = 5,
+    int $similarityThreshold = 50
+): array<ImageColorFrequency>
 ```
 
 **Examples:**
@@ -147,12 +161,30 @@ $gradient = Colority::gradient(
 );
 // Returns array of 10 `HexColor` objects
 
-// Extract dominant colors from images
-$dominantColors = Colority::getImageColors(
+// Extract representative colors from images
+$imageColors = Colority::getImageColors(
     imagePath: __DIR__.'/photo.jpg',
     desiredNumColors: 5
 );
 // Returns array of `RgbColor` objects
+
+// Get the single most common color
+$mostCommon = Colority::getImageMostCommonColor(__DIR__.'/photo.jpg');
+
+// Extract dominant colors with frequency metadata
+use Tomloprod\Colority\Support\Dtos\ImageColorFrequency;
+
+$dominantColors = Colority::getImageDominantColors(
+    imagePath: __DIR__.'/photo.jpg',
+    desiredNumColors: 5,
+    similarityThreshold: 50 // Filters similar colors (0-441)
+);
+
+foreach ($dominantColors as $frequency) {
+    $frequency->color; // RgbColor object
+    $frequency->percentage; // e.g., 45.2
+    $frequency->pixelCount; // e.g., 4520
+}
 ```
 
 ---
