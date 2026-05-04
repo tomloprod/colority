@@ -25,8 +25,7 @@ trait ResolvesContrastRatioColor
             $foregroundColors[] = new HexColor('#FFFFFF');
         }
 
-        /** @var float $bestContrastRatio */
-        $bestContrastRatio = 0;
+        $bestContrastRatio = 0.0;
 
         /** @var Color $bestColor */
         $bestColor = $foregroundColors[0];
