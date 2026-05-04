@@ -64,41 +64,57 @@ You can convert value colors (*strings or, additionally, depending on the color 
 
 ```php
 /**
- * RGB format - Multiple input formats supported
- * 
+ * RGB format - Commas, whitespace or any combination accepted
+ *
  * @var RgbColor $rgbColor
  */
 $rgbColor = colority()->fromRgb('rgb(255,255,255)');
+$rgbColor = colority()->fromRgb('rgb(255, 255, 255)');
+$rgbColor = colority()->fromRgb('rgb(255 255 255)');
 $rgbColor = colority()->fromRgb('255,255,255');
+$rgbColor = colority()->fromRgb('255 255 255');
 $rgbColor = colority()->fromRgb([255, 255, 255]);
 
-/** 
- * Hexadecimal format - With or without hash, shorthand supported
- * 
- * @var HexColor $hexColor 
+/**
+ * Hexadecimal format - With or without hash, shorthand supported,
+ * and array of three RGB byte values [R, G, B]
+ *
+ * @var HexColor $hexColor
  */
 $hexColor = colority()->fromHex('#51B389');
 $hexColor = colority()->fromHex('51B389');
 $hexColor = colority()->fromHex('#ABC');
+$hexColor = colority()->fromHex([81, 179, 137]);
 
 /**
- * HSL format - Multiple input formats supported
- * 
+ * HSL format - Commas, whitespace, with or without deg/% units
+ *
  * @var HslColor $hslColor
  */
 $hslColor = colority()->fromHsl('hsl(168.31deg, 49.58%, 46.67%)');
+$hslColor = colority()->fromHsl('hsl(168.31 49.58% 46.67%)');
 $hslColor = colority()->fromHsl('168.31, 49.58, 46.67');
+$hslColor = colority()->fromHsl('168.31 49.58 46.67');
 $hslColor = colority()->fromHsl([168.31, 49.58, 46.67]);
 
 /**
- * OKLCH format - Multiple input formats supported
- * 
+ * OKLCH format - Commas, whitespace, percentage form for L and C,
+ * angle units (deg, rad, turn, grad) for H
+ *
  * @var OklchColor $oklchColor
  */
 $oklchColor = colority()->fromOklch('oklch(0.70 0.11 163)');
+$oklchColor = colority()->fromOklch('oklch(0.70, 0.11, 163)');
+$oklchColor = colority()->fromOklch('oklch(70% 27.5% 163deg)');
+$oklchColor = colority()->fromOklch('oklch(0.70 0.11 0.45turn)');
 $oklchColor = colority()->fromOklch('0.70 0.11 163');
 $oklchColor = colority()->fromOklch([0.70, 0.11, 163]);
 ```
+
+> **Separator flexibility:** RGB, HSL and OKLCH accept commas, whitespace
+> or any combination as component separators (CSS Color Module Level 4).
+> The internal canonical form remains stable: RGB and HSL store with
+> commas, OKLCH stores with whitespace.
 
 If you cannot specify the original format of the value color, use the `parse()` method. It will auto-detect the color type and return the appropriate `Color` object, or `null` if the format is invalid.
 
@@ -115,9 +131,49 @@ $hslColor = colority()->parse('hsl(168.31deg, 49.58%, 46.67%)');
 /** @var OklchColor|null $oklchColor */
 $oklchColor = colority()->parse('oklch(0.70 0.11 163)');
 
+/** 
+ * CSS gradients are auto-detected and resolved to the dominant stop:
+ * 
+ * @var RgbColor|null $dominantColor 
+ */
+$dominantColor = colority()->parse(
+    'linear-gradient(135deg, rgb(17, 153, 142) 0%, rgb(56, 239, 125) 100%)'
+);
+
 // Always returns null for invalid formats
 $invalid = colority()->parse('not-a-color'); // null
 ```
+
+---
+
+### Gradients
+
+`parse()` accepts CSS gradient strings and returns the **dominant single color** of the gradient — the stop whose visual area along the gradient axis is the largest.
+
+```php
+$color = colority()->parse(
+    'linear-gradient(135deg, rgb(17, 153, 142) 0%, rgb(56, 239, 125) 100%)'
+);
+// rgb(17,153,142) — first stop wins on a 50/50 split
+
+$color = colority()->parse(
+    'linear-gradient(rgb(255,0,0) 0%, rgb(0,0,255) 30%, rgb(0,255,0) 100%)'
+);
+// rgb(0,0,255) — blue dominates the 15%-65% range (50 units of width)
+```
+
+**Supported syntax:**
+- `linear-gradient(...)`, `radial-gradient(...)`, `conic-gradient(...)`.
+- Any combination of CSS-supported color formats inside the stops (hex, rgb, hsl, oklch).
+- Optional `<position>%` after each stop. Missing positions are filled in following CSS rules: first stop defaults to `0%`, last stop defaults to `100%`, intermediate gaps are evenly distributed between declared neighbors.
+- Trailing `!important` is stripped before parsing.
+- Metadata segments (angle like `135deg`, shape like `circle`, position like `from 90deg at 50% 50%`) are detected and skipped.
+
+**Dominance rule:** for each stop the dominance interval is bounded by the midpoints with its neighbors (clamped to `[0, 100]` at the ends). The stop with the widest interval wins. Ties resolve to the first stop in declaration order.
+
+**Limitations:**
+- Named CSS colors (`red`, `blue`, etc.) are not supported as stops; use hex/rgb/hsl/oklch.
+- The library returns one of the original stops — not a perceptual average. If every stop fails to parse, `parse()` returns `null`.
 
 ---
 
@@ -330,6 +386,22 @@ $oklchColor = $hexColor->toOklch();
 ```
 
 **Note:** Conversions between RGB, HSL, and Hex are lossless. Conversions involving OKLCH may be lossy (due to gamut clipping—OKLCH can represent colors outside the sRGB gamut that must be clipped to the nearest displayable color).
+
+#### CSS-ready string with measure units
+
+`HslColor` and `OklchColor` implement the `HasMeasureUnits` interface, which exposes a string with the conventional unit suffixes for the format.
+
+```php
+$hsl = colority()->fromHsl([180, 50, 50]);
+$hsl->getValueColor(); // "hsl(180,50,50)"
+$hsl->getValueColorWithMeasureUnits();  // "hsl(180deg,50%,50%)"
+
+$oklch = colority()->fromOklch([0.5, 0.1, 180]);
+$oklch->getValueColor(); // "oklch(0.5 0.1 180)"
+$oklch->getValueColorWithMeasureUnits();  // "oklch(50% 25% 180deg)"
+```
+
+For OKLCH, L is rendered as a percentage of `1`, C as a percentage of the `0.4` reference (so `0.1` becomes `25%`), and H with the `deg` suffix.
 
 ---
 
@@ -581,6 +653,15 @@ You may use [Composer](https://getcomposer.org) to install Colority into your PH
 ```bash
 composer require tomloprod/colority
 ```
+
+## **Upgrade from 1.x to 2.0**
+
+Most consumers (those using `colority()` or the `Colority` facade) do not need to change anything. The breaking changes affect only callers who reach into the internal parser API:
+
+- `Tomloprod\Colority\Contracts\ValueColorParser::parse()` now returns `array<ColorComponent>` instead of `string`. Direct callers must adapt to the new return shape.
+- `ColorityManager::fromHex()` and `Colority::fromHex()` accept `string|array<int|float>`. Existing string usage is unchanged; the array form is additive.
+- `colority()->parse()` now intercepts CSS gradient strings and returns the dominant stop color. Code that relied on `parse()` returning `null` for gradients should use the `GradientResolver::isGradient()` static check.
+- `getMatchingForegroundColor()` defaults `targetScore` to `ContrastRatioScore::Excellent` (7:1, WCAG AAA) instead of `ContrastRatioScore::Good` (4.5:1, WCAG AA). Pass the enum explicitly to opt back into the previous default.
 
 ## **Contributing**
 
