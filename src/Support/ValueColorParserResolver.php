@@ -27,14 +27,25 @@ final readonly class ValueColorParserResolver
 
     /**
      * Try each color class in order and return the first one whose parser
-     * accepts the input. Returns null if no color class matches.
+     * accepts the input. CSS gradients (linear-gradient, radial-gradient,
+     * conic-gradient) are detected and resolved to their dominant stop
+     * color. Returns null if no color class matches.
      */
     public function parse(string $valueColor): ?Color
     {
+        if (GradientResolver::isGradient($valueColor)) {
+            return (new GradientResolver(
+                fn (string $singleColorString): ?Color => $this->parseSingleColor($singleColorString),
+            ))->resolveDominant($valueColor);
+        }
+
+        return $this->parseSingleColor($valueColor);
+    }
+
+    private function parseSingleColor(string $valueColor): ?Color
+    {
         foreach ($this->colorClasses as $colorClass) {
             try {
-                // Validate via the parser (its parse() declares @throws
-                // InvalidArgumentException, so PHPStan sees the throw).
                 $colorClass::getParser()->parse($valueColor);
             } catch (InvalidArgumentException) {
                 continue;

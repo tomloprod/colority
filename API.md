@@ -389,25 +389,31 @@ $oklch = Colority::fromOklch('oklch(0.70 0.11 163)');
 $array = $oklch->getArrayValueColor(); // [0.70, 0.11, 163.0]
 ```
 
-#### HslColor Only
+#### HslColor and OklchColor
+
+Both implement the `HasMeasureUnits` interface, exposing a CSS-ready
+representation that includes the conventional unit suffixes for the
+format.
 
 ```php
-// Get HSL value with CSS measurement units
 $hslColor->getValueColorWithMeasureUnits(): string
+$oklchColor->getValueColorWithMeasureUnits(): string
 ```
 
-**Example:**
+**Examples:**
 ```php
 $hsl = Colority::fromHsl('hsl(32.4, 60.48, 51.37)');
+$hsl->getValueColorWithMeasureUnits(); // "hsl(32.4deg,60.48%,51.37%)"
+$hsl->getValueColor(); // "hsl(32.4,60.48,51.37)"
 
-// With units (CSS-ready)
-$withUnits = $hsl->getValueColorWithMeasureUnits(); 
-// "hsl(32.4deg,60.48%,51.37%)"
-
-// Without units
-$withoutUnits = $hsl->getValueColor(); 
-// "hsl(32.4,60.48,51.37)"
+$oklch = Colority::fromOklch('oklch(0.5 0.1 180)');
+$oklch->getValueColorWithMeasureUnits(); // "oklch(50% 25% 180deg)"
+$oklch->getValueColor(); // "oklch(0.5 0.1 180)"
 ```
+
+For OKLCH the L component is rendered as a percentage (`L * 100`), the
+C component as a percentage of the 0.4 reference (`C / 0.4 * 100`), and
+H with the `deg` suffix.
 
 ---
 
