@@ -41,7 +41,7 @@ trait ExtractsColorsFromImage
         $colorFrequencies = [];
 
         foreach ($imageColors as $color) {
-            $key = "{$color[0]},{$color[1]},{$color[2]}";
+            $key = sprintf('%s,%s,%s', $color[0], $color[1], $color[2]);
 
             $colorFrequencies[$key] = ($colorFrequencies[$key] ?? 0) + 1;
         }
@@ -329,5 +329,6 @@ trait ExtractsColorsFromImage
 
         return $imageColors;
     }
+
     // @codeCoverageIgnoreEnd
 }

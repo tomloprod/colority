@@ -74,7 +74,7 @@ final class OklchColor extends Color
         $g = max(0, min(255, round($g * 255)));
         $bSrgb = max(0, min(255, round($bSrgb * 255)));
 
-        return new RgbColor("rgb({$r},{$g},{$bSrgb})");
+        return new RgbColor(sprintf('rgb(%s,%s,%s)', $r, $g, $bSrgb));
     }
 
     public function toHex(): HexColor

@@ -59,5 +59,6 @@ enum ContrastRatioScore: string
             ContrastRatioScore::Insufficient => 0,
         };
     }
+
     // @codeCoverageIgnoreEnd
 }
