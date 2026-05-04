@@ -69,7 +69,7 @@ trait ResolvesContrastRatioColor
      * @param  int  $lightnessStep  The amount of lightness to jump in each iteration.
      */
     public function getMatchingForegroundColor(
-        ContrastRatioScore $targetScore = ContrastRatioScore::Good,
+        ContrastRatioScore $targetScore = ContrastRatioScore::Excellent,
         int $lightnessStep = 1
     ): Color {
         [$h, $s, $l] = $this->toHsl()->getArrayValueColor();
