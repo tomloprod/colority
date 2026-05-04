@@ -58,7 +58,7 @@ trait ExtractsColorsFromImage
                 break;
             }
 
-            $rgb = array_map('intval', explode(',', $key));
+            $rgb = array_map(intval(...), explode(',', $key));
 
             // Skip if too similar to an already selected color
             if ($this->isSimilarToAny($rgb, $selectedRgbColors, $similarityThreshold)) {
