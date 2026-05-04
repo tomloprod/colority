@@ -1,3 +1,8 @@
+# Force LF line endings in working tree for text files, regardless of
+# the contributor's core.autocrlf setting. This keeps Pint and other
+# tooling that mandate Unix line endings consistent across platforms.
+* text=auto eol=lf
+
 /docs              export-ignore
 /tests             export-ignore
 /scripts           export-ignore
