@@ -183,7 +183,7 @@ final class ColorityManager
         return $this->fromHsl([$hue, $saturation, $lightness]);
     }
 
-    public function getSimilarColor(Color $color, int $hueRange = 30, int $saturationRange = 10, int $lightnessRange = 10): \Tomloprod\Colority\Colors\HslColor
+    public function getSimilarColor(Color $color, int $hueRange = 30, int $saturationRange = 10, int $lightnessRange = 10): HslColor
     {
         [$baseH, $baseS, $baseL] = $color->toHsl()->getArrayValueColor();
 
