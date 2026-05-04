@@ -11,7 +11,7 @@ final class HslValueColorParser extends AbstractValueColorParser
 {
     public static function getRegex(): string
     {
-        return '/^hsl\(\s*((?:0|[1-9]\d?|[12]\d\d|3[0-5]\d|360)(?:\.\d+)?)\s*,\s*((?:0|100|[1-9]?\d)(?:\.\d+)?)\s*,\s*((?:0|100|[1-9]?\d)(?:\.\d+)?)\s*\)$/';
+        return '/^hsl\(\s*((?:360|(?:0|[1-9]\d?|[12]\d\d|3[0-5]\d)(?:\.\d+)?))\s*,\s*((?:100|(?:0|[1-9]?\d)(?:\.\d+)?))\s*,\s*((?:100|(?:0|[1-9]?\d)(?:\.\d+)?))\s*\)$/';
     }
 
     public function parse(string $valueColor): array

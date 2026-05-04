@@ -23,6 +23,7 @@ test('getRegex rejects invalid oklch color strings', function (string $valueColo
     'oklch(0.5,0.1,180)',
     'oklch(0.5 0.1)',
     'rgb(0,0,0)',
+    'oklch(0.5 0.1 360.5)',
 ]);
 
 test('parse accepts commas, whitespace, or any combination as separators', function (string $form): void {

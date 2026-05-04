@@ -11,7 +11,7 @@ final class OklchValueColorParser extends AbstractValueColorParser
 {
     public static function getRegex(): string
     {
-        return '/^oklch\(\s*(0|1|0?\.\d+)\s+(0|[01](?:\.\d+)?)\s+((?:0|[1-9]\d?|[12]\d\d|3[0-5]\d|360)(?:\.\d+)?)\s*\)$/';
+        return '/^oklch\(\s*(0|1|0?\.\d+)\s+(0|[01](?:\.\d+)?)\s+((?:360|(?:0|[1-9]\d?|[12]\d\d|3[0-5]\d)(?:\.\d+)?))\s*\)$/';
     }
 
     public function parse(string $valueColor): array
