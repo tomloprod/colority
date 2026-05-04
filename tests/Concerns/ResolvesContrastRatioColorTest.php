@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-use Tomloprod\Colority\Colors\Color;
 use Tomloprod\Colority\Colors\HexColor;
 use Tomloprod\Colority\Support\Algorithms\ContrastRatioScore;
 
