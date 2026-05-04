@@ -7,6 +7,9 @@
         <include>
             <directory suffix=".php">./src</directory>
         </include>
+        <exclude>
+            <file>./src/Support/ColorityAlias.php</file>
+        </exclude>
     </source>
     <testsuites>
         <testsuite name="default">
