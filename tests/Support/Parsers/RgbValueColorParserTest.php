@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Tomloprod\Colority\Colors\RgbColor;
 use Tomloprod\Colority\Support\Parsers\RgbValueColorParser;
 
 test('getRegex matches valid rgb color strings', function (string $valueColor): void {
@@ -22,4 +23,17 @@ test('getRegex rejects invalid rgb color strings', function (string $valueColor)
     'rgb(0, 0, 0)',
     'rgba(0,0,0,1)',
     'hsl(0,0,0)',
+]);
+
+test('parse accepts commas, whitespace, or any combination as separators', function (string $form): void {
+    expect((new RgbColor($form))->getValueColor())->toBe('rgb(33,105,90)');
+})->with([
+    'rgb(33,105,90)',
+    'rgb(33, 105, 90)',
+    'rgb(33  105  90)',
+    'rgb(33,105 90)',
+    'rgb(33 ,105, 90)',
+    '33,105,90',
+    '33, 105, 90',
+    '33 105 90',
 ]);

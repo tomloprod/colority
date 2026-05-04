@@ -13,7 +13,7 @@ use Tomloprod\Colority\Services\ColorityManager;
 
 /**
  * @method static Color|null parse(string $valueColor)
- * @method static HexColor fromHex(string $hexValue)
+ * @method static HexColor fromHex(string|array<int|float> $hexValue)
  * @method static RgbColor fromRgb(string|array<int> $rgbValue)
  * @method static HslColor fromHsl(string|array<float> $hslValue)
  * @method static OklchColor fromOklch(string|array<float> $oklchValue)
