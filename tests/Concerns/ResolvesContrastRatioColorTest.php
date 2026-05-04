@@ -158,12 +158,24 @@ test('getMatchingForegroundColor with default score', function (): void {
     expect($backgroundColor->getContrastRatio($foregroundColor))->toBeGreaterThanOrEqual(4.5);
 });
 
-test('getMatchingForegroundColor fallback to black or white', function (): void {
+test('getMatchingForegroundColor falls back to getBestForegroundColor when no hue-preserving match exists', function (): void {
     $midGray = new HexColor('#808080');
 
     $foregroundColor = $midGray->getMatchingForegroundColor(ContrastRatioScore::Excellent);
 
     expect($foregroundColor->toHex()->getValueColor())->toBe('#000000');
+});
+
+test('getMatchingForegroundColor tries the opposite direction before falling back', function (): void {
+    $backgroundColor = new HexColor('#FFFF00');
+
+    $foregroundColor = $backgroundColor->getMatchingForegroundColor(ContrastRatioScore::Excellent);
+
+    [$h, $s] = $foregroundColor->toHsl()->getArrayValueColor();
+
+    expect($backgroundColor->getContrastRatio($foregroundColor))->toBeGreaterThanOrEqual(7);
+    expect($h)->toBe(60.0);
+    expect($s)->toBe(100.0);
 });
 
 test('getMatchingForegroundColor with lightnessStep', function (): void {

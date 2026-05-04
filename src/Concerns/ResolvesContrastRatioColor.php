@@ -62,8 +62,10 @@ trait ResolvesContrastRatioColor
     }
 
     /**
-     * Find a foreground color that matches this color's hue while meeting WCAG contrast requirements:
-     * generates a new color by adjusting lightness while preserving the original hue.
+     * Returns a foreground color that preserves this color's hue and saturation
+     * while attempting to meet the requested WCAG contrast ratio. If the target
+     * cannot be reached without changing the hue, returns the closest
+     * hue-preserving approximation; contrast in that case is best-effort.
      *
      * @param  ContrastRatioScore  $targetScore  The minimum WCAG contrast level to achieve.
      * @param  int  $lightnessStep  The amount of lightness to jump in each iteration.
@@ -79,13 +81,15 @@ trait ResolvesContrastRatioColor
         $lightnessStep = max(1, min(100, $lightnessStep));
 
         // Determine step: if lightness > 50%, go darker; otherwise go lighter
-        $step = ($l > 50) ? -$lightnessStep : $lightnessStep;
+        $primaryStep = ($l > 50) ? -$lightnessStep : $lightnessStep;
 
-        for ($testL = $l + $step; $testL >= 0 && $testL <= 100; $testL += $step) {
-            $testColor = new HslColor([$h, $s, $testL]);
+        foreach ([$primaryStep, -$primaryStep] as $step) {
+            for ($testL = $l + $step; $testL >= 0 && $testL <= 100; $testL += $step) {
+                $testColor = new HslColor([$h, $s, $testL]);
 
-            if ($this->getContrastRatio($testColor) >= $targetContrast) {
-                return $testColor;
+                if ($this->getContrastRatio($testColor) >= $targetContrast) {
+                    return $testColor;
+                }
             }
         }
 
