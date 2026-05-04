@@ -276,15 +276,13 @@ trait ExtractsColorsFromImage
             throw new Exception('The GD extension is not installed or enabled. Please install it to use this functionality.');
         }
 
-        /** @var string|bool $imageFile */
         $imageFile = file_get_contents($imagePath);
 
         if ($imageFile === false) {
             throw new Exception('Failed to read image file');
         }
 
-        /** @var GdImage|bool $image */
-        $image = imagecreatefromstring((string) $imageFile);
+        $image = imagecreatefromstring($imageFile);
 
         if (! $image instanceof GdImage) {
             throw new Exception('Image type is unsupported or the image is corrupt and cannot be loaded.');
@@ -298,15 +296,9 @@ trait ExtractsColorsFromImage
          */
         $imageColors = [];
 
-        /** @var int|bool $imageWidth */
         $imageWidth = imagesx($image);
 
-        /** @var int|bool $imageHeight */
         $imageHeight = imagesy($image);
-
-        if ($imageWidth === false || $imageHeight === false) {
-            throw new Exception('Failed to obtain image dimensions.');
-        }
 
         /**
          * Calculate the pixel step required to obtain approximately the desired number of color samples
@@ -321,7 +313,6 @@ trait ExtractsColorsFromImage
         for ($x = 0; $x < $imageWidth; $x += $pixelStep) {
             for ($y = 0; $y < $imageHeight; $y += $pixelStep) {
 
-                /** @var int|bool $rgb */
                 $rgb = imagecolorat($image, $x, $y);
 
                 if ($rgb === false) {
