@@ -22,6 +22,9 @@ test('getRegex rejects invalid hsl color strings', function (string $valueColor)
     'hsl(0,50,101)',
     'hsl(0,50)',
     'rgb(0,0,0)',
+    'hsl(360.5,50,50)',
+    'hsl(0,100.5,50)',
+    'hsl(0,50,100.5)',
 ]);
 
 test('parse accepts commas, whitespace, or any combination as separators', function (string $form): void {
