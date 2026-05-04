@@ -2,6 +2,7 @@
 
 declare(strict_types=1);
 
+use Tomloprod\Colority\Colors\HslColor;
 use Tomloprod\Colority\Support\Parsers\HslValueColorParser;
 
 test('getRegex matches valid hsl color strings', function (string $valueColor): void {
@@ -21,4 +22,23 @@ test('getRegex rejects invalid hsl color strings', function (string $valueColor)
     'hsl(0,50,101)',
     'hsl(0,50)',
     'rgb(0,0,0)',
+]);
+
+test('parse accepts commas, whitespace, or any combination as separators', function (string $form): void {
+    expect((new HslColor($form))->getValueColor())->toBe('hsl(167.5,52.17,27.06)');
+})->with([
+    'hsl(167.5,52.17,27.06)',
+    'hsl(167.5, 52.17, 27.06)',
+    'hsl(167.5 52.17 27.06)',
+    'hsl(167.5,52.17 27.06)',
+    '167.5,52.17,27.06',
+    '167.5 52.17 27.06',
+]);
+
+test('parse accepts cosmetic deg and percent units regardless of separator', function (string $form): void {
+    expect((new HslColor($form))->getValueColor())->toBe('hsl(167.5,52.17,27.06)');
+})->with([
+    'hsl(167.5deg,52.17%,27.06%)',
+    'hsl(167.5deg, 52.17%, 27.06%)',
+    'hsl(167.5deg 52.17% 27.06%)',
 ]);

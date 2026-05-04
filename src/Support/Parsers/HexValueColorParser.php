@@ -5,22 +5,16 @@ declare(strict_types=1);
 namespace Tomloprod\Colority\Support\Parsers;
 
 use InvalidArgumentException;
-use Tomloprod\Colority\Contracts\ValueColorParser;
+use Tomloprod\Colority\Support\Dtos\ColorComponent;
 
-final readonly class HexValueColorParser implements ValueColorParser
+final class HexValueColorParser extends AbstractValueColorParser
 {
-    /**
-     * {@inheritDoc}
-     */
     public static function getRegex(): string
     {
         return '/^#(?:[0-9a-fA-F]{3}){1,2}$/';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function parse(string $valueColor): string
+    public function parse(string $valueColor): array
     {
         $hex = str_replace([' ', '#'], '', $valueColor);
 
@@ -28,16 +22,16 @@ final readonly class HexValueColorParser implements ValueColorParser
             $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
         }
 
-        $parsedValueColor = '#'.$hex;
+        $canonical = '#'.strtoupper($hex);
 
-        // Validate value color
-        $results = [];
-        preg_match(self::getRegex(), $parsedValueColor, $results);
-
-        if ($results === []) {
+        if (preg_match(self::getRegex(), $canonical) !== 1) {
             throw new InvalidArgumentException('Unknown or invalid value color');
         }
 
-        return strtoupper($parsedValueColor);
+        return [
+            new ColorComponent((float) hexdec(substr($canonical, 1, 2))),
+            new ColorComponent((float) hexdec(substr($canonical, 3, 2))),
+            new ColorComponent((float) hexdec(substr($canonical, 5, 2))),
+        ];
     }
 }

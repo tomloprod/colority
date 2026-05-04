@@ -135,6 +135,16 @@ test('fromHex() with right value color returns HexColor instance', function (str
 
 })->with(['#FFF', '000', '#FF0000', '00F', '#0000FF', 'FFF', '#00FFFF', 'FF0', '#808080', 'A52A2A']);
 
+test('fromHex() with array right value color returns HexColor instance', function (string $rgbBytes): void {
+    $colority = ColorityManager::instance();
+
+    $bytes = array_map(intval(...), explode(',', $rgbBytes));
+
+    expect(fn (): mixed => $colority->fromHex($bytes))->not()->toThrow(InvalidArgumentException::class, 'Unknown or invalid value color');
+
+    expect($colority->fromHex($bytes))->toBeInstanceOf(HexColor::class);
+})->with(['255,255,255', '0,0,0', '255,0,0', '170,187,204']);
+
 test('fromHex() with invalid value color throws InvalidArgumentException', function (string $hexColor): void {
     $colority = ColorityManager::instance();
 
@@ -158,7 +168,16 @@ test('fromRgb() with right value color returns RgbColor instance', function (str
 
     expect($colority->parse($rgbColor))->toBeInstanceOf(RgbColor::class);
 
-})->with(['rgb(255,255,255)', '255,255,255', 'rgb(0,0,0)', '125, 125, 125']);
+})->with([
+    'rgb(255,255,255)',
+    '255,255,255',
+    'rgb(0,0,0)',
+    '125, 125, 125',
+    // CSS Color 4: whitespace separators
+    'rgb(255 255 255)',
+    '255 255 255',
+    'rgb(125, 125 125)',
+]);
 
 test('fromRgb() with array right value color returns RgbColor instance', function (string $rgbColor): void {
     $colority = ColorityManager::instance();
@@ -192,7 +211,20 @@ test('fromHsl() with right value color returns HslColor instance', function (str
 
     expect($colority->parse($hslColor))->toBeInstanceOf(HslColor::class);
 
-})->with(['hsl(0,0,0%)', 'hsl(200,50%,50%)', 'hsl(0deg,0%,0%)', 'hsl(125, 20, 20)', 'hsl(32.4deg,60.48%,51.37%)', 'hsl(32.4,60.48,51.37)', 'hsl(168.31deg, 49.58%, 46.67%)', '168.31, 49.58, 46.67']);
+})->with([
+    'hsl(0,0,0%)',
+    'hsl(200,50%,50%)',
+    'hsl(0deg,0%,0%)',
+    'hsl(125, 20, 20)',
+    'hsl(32.4deg,60.48%,51.37%)',
+    'hsl(32.4,60.48,51.37)',
+    'hsl(168.31deg, 49.58%, 46.67%)',
+    '168.31, 49.58, 46.67',
+    // CSS Color 4: whitespace separators
+    'hsl(200 50% 50%)',
+    'hsl(168.31deg 49.58% 46.67%)',
+    '168.31 49.58 46.67',
+]);
 
 test('fromHsl() with array right value color returns HslColor instance', function (string $hslColor): void {
     $colority = ColorityManager::instance();
@@ -212,7 +244,15 @@ test('fromHsl() with invalid value color throws InvalidArgumentException', funct
 
     expect($colority->parse($hslColor))->toBeNull();
 
-})->with(['xxx(0,0,0)', 't,o,m', '(-255,-255,-255)', '0,0,0,0', 'hsl(0,0,0,0)']);
+})->with([
+    'xxx(0,0,0)',
+    't,o,m',
+    '(-255,-255,-255)',
+    '0,0,0,0',
+    'hsl(0,0,0,0)',
+    // Non-numeric prefix on a percentage component
+    'hsl(0, abc%, 50)',
+]);
 
 /**
  * OKLCH
@@ -226,7 +266,28 @@ test('fromOklch() with right value color returns OklchColor instance', function 
 
     expect($colority->parse($oklchColor))->toBeInstanceOf(OklchColor::class);
 
-})->with(['oklch(0.5 0.1 180)', 'oklch(0.7 0.15 120)', 'oklch(0.6 0.2 90)', 'oklch(0.8 0.05 240)', 'oklch(1 0 0)', 'oklch(0 0 360)']);
+})->with([
+    'oklch(0.5 0.1 180)',
+    'oklch(0.7 0.15 120)',
+    'oklch(0.6 0.2 90)',
+    'oklch(0.8 0.05 240)',
+    'oklch(1 0 0)',
+    'oklch(0 0 360)',
+    'oklch(0.505 0.213 27.518)',
+    // CSS Color 4: comma separators
+    'oklch(0.5,0.1,180)',
+    'oklch(0.5, 0.1, 180)',
+    '0.5, 0.1, 180',
+    // L and C as percentage (CSS Color 4)
+    'oklch(50% 0.1 180)',
+    'oklch(0.5 25% 180)',
+    'oklch(50% 25% 180)',
+    'oklch(100% 0.1 180)',
+    // H with angle units
+    'oklch(0.5 0.1 180deg)',
+    'oklch(0.5 0.1 0.5turn)',
+    'oklch(0.5 0.1 200grad)',
+]);
 
 test('fromOklch() with array right value color returns OklchColor instance', function (string $oklchColor): void {
     $colority = ColorityManager::instance();
@@ -246,7 +307,22 @@ test('fromOklch() with invalid value color throws InvalidArgumentException', fun
 
     expect($colority->parse($oklchColor))->toBeNull();
 
-})->with(['not-a-color', 'oklch()', 'oklch(0.5)', 'oklch(0.5 0.1)', 'oklch(2 0.1 180)', 'oklch(0.5 2 180)', 'oklch(0.5 0.1 400)']);
+})->with([
+    'not-a-color',
+    'oklch()',
+    'oklch(0.5)',
+    'oklch(0.5 0.1)',
+    'oklch(2 0.1 180)',
+    'oklch(0.5 2 180)',
+    'oklch(0.5 0.1 400)',
+    // Out-of-range percentages
+    'oklch(101% 0.1 180)',
+    'oklch(0.5 -25% 180)',
+    'oklch(150% 0.1 180)',
+    // Non-numeric prefix on a unit-suffixed component
+    'oklch(abc% 0.1 180)',
+    'oklch(0.5 0.1 abcdeg)',
+]);
 
 /**
  * Gradient

@@ -4,28 +4,14 @@ declare(strict_types=1);
 
 namespace Tomloprod\Colority\Colors;
 
-use InvalidArgumentException;
+use Tomloprod\Colority\Contracts\HasMeasureUnits;
 use Tomloprod\Colority\Contracts\ValueColorParser;
+use Tomloprod\Colority\Support\Dtos\ColorComponent;
+use Tomloprod\Colority\Support\FloatFormatter;
 use Tomloprod\Colority\Support\Parsers\HslValueColorParser;
 
-final class HslColor extends Color
+final class HslColor extends Color implements HasMeasureUnits
 {
-    /**
-     * @param  string|array<float>  $valueColor
-     *
-     * @throws InvalidArgumentException
-     */
-    public function __construct(string|array $valueColor)
-    {
-        if (is_array($valueColor)) {
-            $valueColor = 'hsl('.implode(',', $valueColor).')';
-        }
-
-        $parsedValueColor = self::getParser()->parse($valueColor);
-
-        $this->valueColor = $parsedValueColor;
-    }
-
     public static function getParser(): ValueColorParser
     {
         return new HslValueColorParser();
@@ -43,13 +29,11 @@ final class HslColor extends Color
      */
     public function getArrayValueColor(): array
     {
-        $results = [];
-
-        preg_match(self::getParser()::getRegex(), $this->valueColor, $results);
-
-        [$hsl, $h, $s, $l] = $results;
-
-        return [(float) $h, (float) $s, (float) $l];
+        return [
+            $this->components[0]->value,
+            $this->components[1]->value,
+            $this->components[2]->value,
+        ];
     }
 
     public function toHex(): HexColor
@@ -111,5 +95,26 @@ final class HslColor extends Color
     public function toOklch(): OklchColor
     {
         return $this->toRgb()->toOklch();
+    }
+
+    /**
+     * @param  array<ColorComponent>  $components
+     */
+    protected function buildCanonical(array $components): string
+    {
+        return sprintf(
+            'hsl(%s,%s,%s)',
+            FloatFormatter::asFixedPoint($components[0]->value),
+            FloatFormatter::asFixedPoint($components[1]->value),
+            FloatFormatter::asFixedPoint($components[2]->value),
+        );
+    }
+
+    /**
+     * @param  array<int|float>  $values  HSL component values [H, S, L].
+     */
+    protected function arrayToString(array $values): string
+    {
+        return 'hsl('.implode(',', $values).')';
     }
 }

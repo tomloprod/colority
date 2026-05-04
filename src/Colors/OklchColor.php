@@ -4,29 +4,15 @@ declare(strict_types=1);
 
 namespace Tomloprod\Colority\Colors;
 
-use InvalidArgumentException;
+use Tomloprod\Colority\Contracts\HasMeasureUnits;
 use Tomloprod\Colority\Contracts\ValueColorParser;
 use Tomloprod\Colority\Support\ColorSpaceConverter;
+use Tomloprod\Colority\Support\Dtos\ColorComponent;
+use Tomloprod\Colority\Support\FloatFormatter;
 use Tomloprod\Colority\Support\Parsers\OklchValueColorParser;
 
-final class OklchColor extends Color
+final class OklchColor extends Color implements HasMeasureUnits
 {
-    /**
-     * @param  string|array<float>  $valueColor
-     *
-     * @throws InvalidArgumentException
-     */
-    public function __construct(string|array $valueColor)
-    {
-        if (is_array($valueColor)) {
-            $valueColor = 'oklch('.implode(' ', $valueColor).')';
-        }
-
-        $parsedValueColor = self::getParser()->parse($valueColor);
-
-        $this->valueColor = $parsedValueColor;
-    }
-
     public static function getParser(): ValueColorParser
     {
         return new OklchValueColorParser();
@@ -37,11 +23,28 @@ final class OklchColor extends Color
      */
     public function getArrayValueColor(): array
     {
-        // Extract L, C, H from "oklch(L C H)"
-        $value = str_replace(['oklch(', ')'], '', $this->valueColor);
-        $parts = explode(' ', trim($value));
+        return [
+            $this->components[0]->value,
+            $this->components[1]->value,
+            $this->components[2]->value,
+        ];
+    }
 
-        return [(float) $parts[0], (float) $parts[1], (float) $parts[2]];
+    /**
+     * CSS-ready OKLCH form with conventional unit suffixes:
+     * L as percentage (0-100%), C as percentage of the 0.4 reference (0-100%),
+     * and H as degrees.
+     */
+    public function getValueColorWithMeasureUnits(): string
+    {
+        [$L, $C, $H] = $this->getArrayValueColor();
+
+        return sprintf(
+            'oklch(%s%% %s%% %sdeg)',
+            FloatFormatter::asFixedPoint($L * 100),
+            FloatFormatter::asFixedPoint($C / 0.4 * 100),
+            FloatFormatter::asFixedPoint($H),
+        );
     }
 
     /**
@@ -90,5 +93,31 @@ final class OklchColor extends Color
     public function toOklch(): self
     {
         return $this;
+    }
+
+    /**
+     * @param  array<ColorComponent>  $components
+     */
+    protected function buildCanonical(array $components): string
+    {
+        return sprintf(
+            'oklch(%s %s %s)',
+            FloatFormatter::asFixedPoint($components[0]->value),
+            FloatFormatter::asFixedPoint($components[1]->value),
+            FloatFormatter::asFixedPoint($components[2]->value),
+        );
+    }
+
+    /**
+     * @param  array<int|float>  $values  OKLCH component values [L, C, H].
+     */
+    protected function arrayToString(array $values): string
+    {
+        return sprintf(
+            'oklch(%s %s %s)',
+            FloatFormatter::asFixedPoint((float) ($values[0] ?? 0)),
+            FloatFormatter::asFixedPoint((float) ($values[1] ?? 0)),
+            FloatFormatter::asFixedPoint((float) ($values[2] ?? 0)),
+        );
     }
 }

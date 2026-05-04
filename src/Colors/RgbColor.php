@@ -4,29 +4,13 @@ declare(strict_types=1);
 
 namespace Tomloprod\Colority\Colors;
 
-use InvalidArgumentException;
 use Tomloprod\Colority\Contracts\ValueColorParser;
 use Tomloprod\Colority\Support\ColorSpaceConverter;
+use Tomloprod\Colority\Support\Dtos\ColorComponent;
 use Tomloprod\Colority\Support\Parsers\RgbValueColorParser;
 
 final class RgbColor extends Color
 {
-    /**
-     * @param  string|array<int>  $valueColor
-     *
-     * @throws InvalidArgumentException
-     */
-    public function __construct(string|array $valueColor)
-    {
-        if (is_array($valueColor)) {
-            $valueColor = 'rgb('.implode(',', $valueColor).')';
-        }
-
-        $parsedValueColor = self::getParser()->parse($valueColor);
-
-        $this->valueColor = $parsedValueColor;
-    }
-
     public static function getParser(): ValueColorParser
     {
         return new RgbValueColorParser();
@@ -37,13 +21,11 @@ final class RgbColor extends Color
      */
     public function getArrayValueColor(): array
     {
-        $results = [];
-
-        preg_match(self::getParser()::getRegex(), $this->valueColor, $results);
-
-        [$rgb, $r, $g, $b] = $results;
-
-        return [(int) $r, (int) $g, (int) $b];
+        return [
+            (int) $this->components[0]->value,
+            (int) $this->components[1]->value,
+            (int) $this->components[2]->value,
+        ];
     }
 
     public function toHex(): HexColor
@@ -132,5 +114,26 @@ final class RgbColor extends Color
         }
 
         return new OklchColor([round($L, 6), round($C, 6), round($H, 2)]);
+    }
+
+    /**
+     * @param  array<ColorComponent>  $components
+     */
+    protected function buildCanonical(array $components): string
+    {
+        return sprintf(
+            'rgb(%d,%d,%d)',
+            (int) $components[0]->value,
+            (int) $components[1]->value,
+            (int) $components[2]->value,
+        );
+    }
+
+    /**
+     * @param  array<int|float>  $values  RGB byte values [R, G, B].
+     */
+    protected function arrayToString(array $values): string
+    {
+        return 'rgb('.implode(',', $values).')';
     }
 }

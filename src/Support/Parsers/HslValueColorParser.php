@@ -5,35 +5,41 @@ declare(strict_types=1);
 namespace Tomloprod\Colority\Support\Parsers;
 
 use InvalidArgumentException;
-use Tomloprod\Colority\Contracts\ValueColorParser;
+use Tomloprod\Colority\Support\FloatFormatter;
 
-final readonly class HslValueColorParser implements ValueColorParser
+final class HslValueColorParser extends AbstractValueColorParser
 {
-    /**
-     * {@inheritDoc}
-     */
     public static function getRegex(): string
     {
         return '/^hsl\(\s*((?:0|[1-9]\d?|[12]\d\d|3[0-5]\d|360)(?:\.\d+)?)\s*,\s*((?:0|100|[1-9]?\d)(?:\.\d+)?)\s*,\s*((?:0|100|[1-9]?\d)(?:\.\d+)?)\s*\)$/';
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public function parse(string $valueColor): string
+    public function parse(string $valueColor): array
     {
-        $parsedValueColor = str_replace([' ', 'hsl(', ')', 'deg', '%'], '', $valueColor);
+        $stripped = str_replace(['hsl(', ')'], '', $valueColor);
+        $parts = $this->splitComponents($stripped);
 
-        $parsedValueColor = 'hsl('.$parsedValueColor.')';
-
-        // Validate value color
-        $results = [];
-        preg_match(self::getRegex(), $parsedValueColor, $results);
-
-        if ($results === []) {
-            throw new InvalidArgumentException('Unknown or invalid value color: '.$parsedValueColor);
+        if (count($parts) !== 3) {
+            throw new InvalidArgumentException('Unknown or invalid value color: '.$valueColor);
         }
 
-        return $parsedValueColor;
+        $components = [
+            $this->parseComponent($parts[0], ['deg' => 1.0]),
+            $this->parseComponent($parts[1], ['%' => 1.0]),
+            $this->parseComponent($parts[2], ['%' => 1.0]),
+        ];
+
+        $canonical = sprintf(
+            'hsl(%s,%s,%s)',
+            FloatFormatter::asFixedPoint($components[0]->value),
+            FloatFormatter::asFixedPoint($components[1]->value),
+            FloatFormatter::asFixedPoint($components[2]->value),
+        );
+
+        if (preg_match(self::getRegex(), $canonical) !== 1) {
+            throw new InvalidArgumentException('Unknown or invalid value color: '.$canonical);
+        }
+
+        return $components;
     }
 }

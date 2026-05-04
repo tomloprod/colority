@@ -210,7 +210,10 @@ final class ColorityManager
         return (new ValueColorParserResolver())->parse($valueColor);
     }
 
-    public function fromHex(string $hexValue): HexColor
+    /**
+     * @param  string|array<int|float>  $hexValue
+     */
+    public function fromHex(string|array $hexValue): HexColor
     {
         return new HexColor($hexValue);
     }

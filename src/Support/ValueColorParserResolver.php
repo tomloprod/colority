@@ -10,13 +10,10 @@ use Tomloprod\Colority\Colors\HexColor;
 use Tomloprod\Colority\Colors\HslColor;
 use Tomloprod\Colority\Colors\OklchColor;
 use Tomloprod\Colority\Colors\RgbColor;
-use Tomloprod\Colority\Contracts\ValueColorParser;
 
 final readonly class ValueColorParserResolver
 {
     /**
-     * Creates a new parsable content instance.
-     *
      * @param  array<int, class-string<Color>>  $colorClasses
      */
     public function __construct(
@@ -29,26 +26,23 @@ final readonly class ValueColorParserResolver
     ) {}
 
     /**
-     * Parses the value color
+     * Try each color class in order and return the first one whose parser
+     * accepts the input. Returns null if no color class matches.
      */
     public function parse(string $valueColor): ?Color
     {
-        /** @var Color|null $color */
-        $color = null;
-
-        /** @var class-string<Color> $colorClass */
         foreach ($this->colorClasses as $colorClass) {
             try {
-                /** @var ValueColorParser $parser */
-                $parser = new ($colorClass::getParser());
-
-                $color = new $colorClass($parser->parse($valueColor));
-
-                break;
+                // Validate via the parser (its parse() declares @throws
+                // InvalidArgumentException, so PHPStan sees the throw).
+                $colorClass::getParser()->parse($valueColor);
             } catch (InvalidArgumentException) {
+                continue;
             }
+
+            return new $colorClass($valueColor);
         }
 
-        return $color;
+        return null;
     }
 }
