@@ -27,6 +27,7 @@ final readonly class HexValueColorParser implements ValueColorParser
         if (mb_strlen($hex) === 3) {
             $hex = $hex[0].$hex[0].$hex[1].$hex[1].$hex[2].$hex[2];
         }
+
         $parsedValueColor = '#'.$hex;
 
         // Validate value color
