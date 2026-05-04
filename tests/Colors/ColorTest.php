@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Tomloprod\Colority\Colors\HexColor;
 use Tomloprod\Colority\Colors\HslColor;
+use Tomloprod\Colority\Colors\OklchColor;
 use Tomloprod\Colority\Colors\RgbColor;
 
 test('isEqualTo() returns true for identical HexColor instances', function (): void {
@@ -77,6 +78,16 @@ test('isEqualTo() returns true for same color instance', function (): void {
     $hexColor = new HexColor('#FF0000');
 
     expect($hexColor->isEqualTo($hexColor))->toBeTrue();
+});
+
+test('isEqualTo() distinguishes two OklchColor instances that share the same clipped sRGB representation', function (): void {
+    // Both colors are out of the sRGB gamut and clip to red on conversion to
+    // hex, but they are genuinely distinct in OKLCH.
+    $a = new OklchColor('oklch(0.7 0.45 30)');
+    $b = new OklchColor('oklch(0.7 0.5 30)');
+
+    expect($a->toHex()->getValueColor())->toBe($b->toHex()->getValueColor());
+    expect($a->isEqualTo($b))->toBeFalse();
 });
 
 test('isEqualTo() handles black color across all types', function (): void {
