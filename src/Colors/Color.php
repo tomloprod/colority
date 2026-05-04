@@ -68,6 +68,10 @@ abstract class Color implements TransformableColor
 
     final public function isEqualTo(self $color): bool
     {
+        if (static::class === $color::class) {
+            return $this->getValueColor() === $color->getValueColor();
+        }
+
         return $this->toHex()->getValueColor() === $color->toHex()->getValueColor();
     }
 
