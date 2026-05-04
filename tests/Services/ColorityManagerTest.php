@@ -316,7 +316,7 @@ it('generates a gradient through multiple colors', function (): void {
 
     expect($gradient)->each->toBeInstanceOf(HexColor::class);
 
-    $hexes = array_map(fn ($c) => strtolower($c->toHex()->getValueColor()), $gradient);
+    $hexes = array_map(fn (\Tomloprod\Colority\Colors\HexColor $c) => strtolower($c->toHex()->getValueColor()), $gradient);
 
     // Check start
     expect($hexes[0])->toBe('#ff0000');

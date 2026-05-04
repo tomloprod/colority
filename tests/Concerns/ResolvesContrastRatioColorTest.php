@@ -7,7 +7,6 @@ use Tomloprod\Colority\Colors\HexColor;
 use Tomloprod\Colority\Support\Algorithms\ContrastRatioScore;
 
 test('getContrastRatio with #000000 foreground', function (string $hexColor, float $contrastRatioWCAG): void {
-    /** @var float $contrastRatio */
     $contrastRatio = (new HexColor($hexColor))->getContrastRatio(new HexColor('#000000'));
 
     expect($contrastRatio)->toBe($contrastRatioWCAG);
@@ -25,7 +24,6 @@ test('getContrastRatio with #000000 foreground', function (string $hexColor, flo
 ]);
 
 test('getContrastRatio with #FFFFFF foreground', function (string $hexColor, float $contrastRatioWCAG): void {
-    /** @var float $contrastRatio */
     $contrastRatio = (new HexColor($hexColor))->getContrastRatio(new HexColor('#FFFFFF'));
 
     expect($contrastRatio)->toBe($contrastRatioWCAG);
@@ -43,7 +41,6 @@ test('getContrastRatio with #FFFFFF foreground', function (string $hexColor, flo
 ]);
 
 test('getContrastRatio with default foreground', function (string $hexColor, float $contrastRatioWCAG): void {
-    /** @var float $contrastRatio */
     $contrastRatio = (new HexColor($hexColor))->getContrastRatio();
 
     expect($contrastRatio)->toBe($contrastRatioWCAG);
@@ -63,7 +60,6 @@ test('getContrastRatio with default foreground', function (string $hexColor, flo
 test('getBestForegroundColor with #000000 background', function (): void {
     $hexColor = new HexColor('#000000');
 
-    /** @var Color $bestForegroundColor */
     $bestForegroundColor = $hexColor->getBestForegroundColor([
         new HexColor('#000000'),
         new HexColor('#441273'),
@@ -83,7 +79,6 @@ test('getBestForegroundColor with #000000 background', function (): void {
 test('getBestForegroundColor with #FFFFFF background', function (): void {
     $hexColor = new HexColor('#FFFFFF');
 
-    /** @var Color $bestForegroundColor */
     $bestForegroundColor = $hexColor->getBestForegroundColor([
         new HexColor('#000000'),
         new HexColor('#441273'),
@@ -103,7 +98,6 @@ test('getBestForegroundColor with #FFFFFF background', function (): void {
 test('getBestForegroundColor with #FFFFFF background and default foregrounds', function (): void {
     $hexColor = new HexColor('#FFFFFF');
 
-    /** @var Color $bestForegroundColor */
     $bestForegroundColor = $hexColor->getBestForegroundColor();
 
     expect($bestForegroundColor->getValueColor())->toBe('#000000');
@@ -112,7 +106,6 @@ test('getBestForegroundColor with #FFFFFF background and default foregrounds', f
 test('getBestForegroundColor with #000000 background and default foregrounds', function (): void {
     $hexColor = new HexColor('#000000');
 
-    /** @var Color $bestForegroundColor */
     $bestForegroundColor = $hexColor->getBestForegroundColor();
 
     expect($bestForegroundColor->getValueColor())->toBe('#FFFFFF');
