@@ -195,21 +195,21 @@ use Tomloprod\Colority\Support\Algorithms\ContrastRatioScore;
 
 $backgroundColor = colority()->fromHex('#336699');
 
-// AA level by default
+// AAA level by default
 $foregroundColor = $backgroundColor->getMatchingForegroundColor();
 
-// AAA level for enhanced contrast
-$foregroundColor = $backgroundColor->getMatchingForegroundColor(ContrastRatioScore::Excellent);
+// AA level for relaxed contrast requirements
+$foregroundColor = $backgroundColor->getMatchingForegroundColor(ContrastRatioScore::Good);
 
 // With custom lightness step (faster but less precise)
 $foregroundColor = $backgroundColor->getMatchingForegroundColor(
-    targetScore: ContrastRatioScore::Good, 
+    targetScore: ContrastRatioScore::Good,
     lightnessStep: 5 // the default value is 1
 );
 ```
 
 **Optional parameters:**
-- `targetScore` *(default: ContrastRatioScore::Good)*: The desired contrast level. See [ContrastRatioScore Enum](#contrastratioscore-enum).
+- `targetScore` *(default: ContrastRatioScore::Excellent)*: The desired contrast level. See [ContrastRatioScore Enum](#contrastratioscore-enum).
 - `lightnessStep` *(default: 1)*: The amount of lightness points (1-100) to jump in each iteration while searching for a matching color. Larger values are faster but less precise.
 
 #### ContrastRatioScore Enum
@@ -217,8 +217,8 @@ $foregroundColor = $backgroundColor->getMatchingForegroundColor(
 The `Tomloprod\Colority\Support\Algorithms\ContrastRatioScore` enum defines the standard contrast levels and provides helper methods to validate them.
 
 **Available contrast levels:**
-- `ContrastRatioScore::Excellent`: 7:1 ratio (WCAG AAA for normal text)
-- `ContrastRatioScore::Good` *(default)*: 4.5:1 ratio (WCAG AA for normal text)
+- `ContrastRatioScore::Excellent` *(default)*: 7:1 ratio (WCAG AAA for normal text)
+- `ContrastRatioScore::Good`: 4.5:1 ratio (WCAG AA for normal text)
 - `ContrastRatioScore::Acceptable`: 3:1 ratio (WCAG AA for large text/UI).
 - `ContrastRatioScore::Insufficient`
 
