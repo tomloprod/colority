@@ -35,6 +35,9 @@
 - **[Color Conversion](#color-conversion)**
   - Convert between RGB, HSL, Hexadecimal, and OKLCH formats
 
+- **[Semantic Palette](#semantic-palette)**
+  - Eight built-in semantic slots (primary, secondary, success, danger, warning, info, light, dark) with overrides per slot, in bulk, or by custom name
+
 ### Color Utilities
 
 - **[Color Adjustments](#color-adjustments)**: Adjust brightness and saturation
@@ -148,18 +151,18 @@ $invalid = colority()->parse('not-a-color'); // null
 
 ### Gradients
 
-`parse()` accepts CSS gradient strings and returns the **dominant single color** of the gradient — the stop whose visual area along the gradient axis is the largest.
+`parse()` accepts CSS gradient strings and returns the **dominant single color** of the gradient, the stop whose visual area along the gradient axis is the largest.
 
 ```php
 $color = colority()->parse(
     'linear-gradient(135deg, rgb(17, 153, 142) 0%, rgb(56, 239, 125) 100%)'
 );
-// rgb(17,153,142) — first stop wins on a 50/50 split
+// rgb(17,153,142) first stop wins on a 50/50 split
 
 $color = colority()->parse(
     'linear-gradient(rgb(255,0,0) 0%, rgb(0,0,255) 30%, rgb(0,255,0) 100%)'
 );
-// rgb(0,0,255) — blue dominates the 15%-65% range (50 units of width)
+// rgb(0,0,255) blue dominates the 15%-65% range (50 units of width)
 ```
 
 **Supported syntax:**
@@ -173,7 +176,7 @@ $color = colority()->parse(
 
 **Limitations:**
 - Named CSS colors (`red`, `blue`, etc.) are not supported as stops; use hex/rgb/hsl/oklch.
-- The library returns one of the original stops — not a perceptual average. If every stop fails to parse, `parse()` returns `null`.
+- The library returns one of the original stops, not a perceptual average. If every stop fails to parse, `parse()` returns `null`.
 
 ---
 
@@ -385,7 +388,7 @@ $hslColor = $hexColor->toHsl();
 $oklchColor = $hexColor->toOklch();
 ```
 
-**Note:** Conversions between RGB, HSL, and Hex are lossless. Conversions involving OKLCH may be lossy (due to gamut clipping—OKLCH can represent colors outside the sRGB gamut that must be clipped to the nearest displayable color).
+**Note:** Conversions between RGB, HSL, and Hex are lossless. Conversions involving OKLCH may be lossy (due to gamut clipping-OKLCH can represent colors outside the sRGB gamut that must be clipped to the nearest displayable color).
 
 #### CSS-ready string with measure units
 
@@ -402,6 +405,90 @@ $oklch->getValueColorWithMeasureUnits();  // "oklch(50% 25% 180deg)"
 ```
 
 For OKLCH, L is rendered as a percentage of `1`, C as a percentage of the `0.4` reference (so `0.1` becomes `25%`), and H with the `deg` suffix.
+
+---
+
+### Semantic palette
+
+Colority ships with eight semantic color slots `primary`, `secondary`, `success`, `danger`, `warning`, `info`, `light`, `dark`, preloaded with default values and overridable per slot, in bulk, or all at once.
+
+```php
+// Defaults are available out of the box.
+colority()->primary(); // HexColor #5B8DEF
+colority()->success(); // HexColor #4BD396
+colority()->danger(); // HexColor #F5707A
+```
+
+#### Override individual slots
+
+Each slot has a dedicated setter. Both `Color` instances and hex strings are accepted.
+
+```php
+colority()->setPrimary('#FF6347');
+colority()->setDanger(colority()->fromOklch('oklch(0.6 0.2 30)'));
+
+colority()->primary()->getValueColor(); // "#FF6347"
+```
+
+#### Bulk configuration
+
+`configure()` overrides multiple slots at once and preserves the ones not provided.
+
+```php
+colority()->configure([
+    'primary' => '#FF6347',
+    'success' => '#00CED1',
+    'warning' => colority()->fromHsl('hsl(40, 90%, 60%)'),
+]);
+```
+
+#### Custom slot names
+
+Beyond the eight semantic names, you can register and read arbitrary slots through the generic accessors.
+
+```php
+colority()->setColor('brand', '#0D6EFD');
+colority()->setColor('accent', '#FF00AA');
+
+colority()->color('brand');   // ?Color
+colority()->color('unknown'); // null
+```
+
+#### Reverting to defaults
+
+`resetPalette()` discards every override and restores the eight defaults. Useful between tests.
+
+```php
+colority()->resetPalette();
+```
+
+The eight defaults Colority ships with:
+
+| Slot | Hex |
+|---|---|
+| `primary` | `#5B8DEF` |
+| `secondary` | `#A1A8B3` |
+| `success` | `#4BD396` |
+| `danger` | `#F5707A` |
+| `warning` | `#F9C851` |
+| `info` | `#3AC9D6` |
+| `light` | `#F4F6F8` |
+| `dark` | `#1F2937` |
+
+#### Build a palette from a brand color
+
+`buildPalette()` derives a coherent palette from a single brand color: `primary` becomes the brand, `secondary` is its complementary hue with reduced saturation, and `light`/`dark` are the brand brightened and darkened. 
+
+The semantic slots (`success`, `danger`, `warning`, `info`) keep their library defaults so they remain visually recognizable across brands.
+
+```php
+colority()->buildPalette('#FF6347');
+
+colority()->primary(); // #FF6347 (your brand)
+colority()->secondary(); // complementary hue, desaturated
+colority()->light(); // brand brightened
+colority()->dark(); // brand darkened
+```
 
 ---
 
