@@ -34,13 +34,20 @@ final readonly class Palette
     {
         [$h, $s, $l] = $brandColor->toHsl()->getArrayValueColor();
 
-        $secondary = new HslColor([
-            fmod($h + 180.0, 360.0),
-            max(10.0, $s * 0.4),
-            $l,
-        ]);
-
         $defaults = self::defaultColors();
+
+        /**
+         * A near-grey brand has no meaningful hue to flip, so the complementary
+         * computation collapses to an arbitrary cyan. Fall back to the default
+         * secondary in that case.
+         */
+        $secondary = ($s < 5.0)
+            ? $defaults['secondary']
+            : new HslColor([
+                fmod($h + 180.0, 360.0),
+                max(10.0, $s * 0.4),
+                $l,
+            ]);
 
         return new self([
             'primary' => $brandColor,

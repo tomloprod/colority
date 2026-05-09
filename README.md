@@ -477,9 +477,16 @@ The eight defaults Colority ships with:
 
 #### Build a palette from a brand color
 
-`buildPalette()` derives a coherent palette from a single brand color: `primary` becomes the brand, `secondary` is its complementary hue with reduced saturation, and `light`/`dark` are the brand brightened and darkened. 
+`buildPalette()` derives a coherent palette from a single brand color. The algorithm, applied in HSL space:
 
-The semantic slots (`success`, `danger`, `warning`, `info`) keep their library defaults so they remain visually recognizable across brands.
+| Slot | Formula |
+|---|---|
+| `primary` | the brand color, untouched |
+| `secondary` | `HSL(brand.H + 180°, max(10, brand.S × 0.4), brand.L)`, complementary hue with saturation reduced to 40% (floored at 10 so it never goes pure grey). When the brand itself is near-grey (`S < 5`), the default secondary is used instead. |
+| `light` | `brand.lighter(40)`, lightness + 40 (clamped to 100) |
+| `dark` | `brand.darker(40)`, lightness - 40 (clamped to 0) |
+
+The semantic slots (`success`, `danger`, `warning`, `info`) keep their library defaults so they remain visually recognizable across brands. Any custom slots previously registered via `setColor()` are dropped, `buildPalette()` rebuilds the whole palette.
 
 ```php
 colority()->buildPalette('#FF6347');
