@@ -14,6 +14,8 @@ Complete API documentation for Colority's facades, classes, and methods.
 | **Convert formats** | `toHex()`, `toRgb()`, `toHsl()`, `toOklch()` | `$color->toHex()` |
 | **Adjust brightness** | `lighter()`, `darker()` | `$color->lighter()->toHex()` |
 | **Adjust saturation** | `saturate()`, `desaturate()` | `$color->saturate()` |
+| **Semantic palette** | `primary()`, `success()`, … | `colority()->primary()` |
+| **Customize palette** | `setPrimary()`, `configure()` | `colority()->setPrimary('#FF6347')` |
 | **Generate from text** | `textToColor()` | `colority()->textToColor('username')` |
 | **Best contrast color** | `getBestForegroundColor()` | `$bg->getBestForegroundColor()` |
 | **Get contrast ratio** | `getContrastRatio()` | `$color->getContrastRatio($other)` |
@@ -77,6 +79,94 @@ try {
 } catch (InvalidArgumentException $e) {
     // Handle invalid color format
 }
+```
+
+#### Semantic Palette
+
+Colority maintains a state-backed palette of named color slots accessible through the facade. Eight semantic slots are pre-populated with defaults and can be overridden individually, in bulk, or by custom name.
+
+```php
+// Read the eight built-in semantic slots
+Colority::primary(): Color
+Colority::secondary(): Color
+Colority::success(): Color
+Colority::danger(): Color
+Colority::warning(): Color
+Colority::info(): Color
+Colority::light(): Color
+Colority::dark(): Color
+
+// Read an arbitrary slot (returns null if not configured)
+Colority::color(string $name): Color|null
+
+// Override a single slot
+Colority::setPrimary(Color|string $color): void
+Colority::setSecondary(Color|string $color): void
+Colority::setSuccess(Color|string $color): void
+Colority::setDanger(Color|string $color): void
+Colority::setWarning(Color|string $color): void
+Colority::setInfo(Color|string $color): void
+Colority::setLight(Color|string $color): void
+Colority::setDark(Color|string $color): void
+
+// Set or register a slot by arbitrary name
+Colority::setColor(string $name, Color|string $color): void
+
+// Bulk override; slots not present in the array keep their current value
+Colority::configure(array<string, Color|string> $palette): void
+
+// Restore the eight defaults shipped with the library
+Colority::resetPalette(): void
+
+/**
+ * Build a coherent palette from a single brand color: 
+ * primary becomes the brand, secondary becomes the complementary hue with 
+ * reduced saturation, light and dark are the brand brightened and darkened. 
+ * 
+ * The semantic slots (success, danger, warning, info) keep their library defaults.
+ */
+Colority::buildPalette(Color|string $brandColor): void
+```
+
+**Default values:**
+
+| Slot | Hex |
+|---|---|
+| `primary` | `#5B8DEF` |
+| `secondary` | `#A1A8B3` |
+| `success` | `#4BD396` |
+| `danger` | `#F5707A` |
+| `warning` | `#F9C851` |
+| `info` | `#3AC9D6` |
+| `light` | `#F4F6F8` |
+| `dark` | `#1F2937` |
+
+**Examples:**
+
+```php
+use Tomloprod\Colority\Support\Facades\Colority;
+
+// Override individual slots
+Colority::setPrimary('#FF6347');
+Colority::setSuccess(Colority::fromOklch('oklch(0.65 0.15 145)'));
+
+// Bulk
+Colority::configure([
+    'primary' => '#FF6347',
+    'success' => '#00CED1',
+    'brand' => '#0D6EFD',
+]);
+
+Colority::primary()->getValueColor();      // "#FF6347"
+Colority::color('brand')->getValueColor(); // "#0D6EFD"
+Colority::color('unknown');                // null
+
+// Pair semantic background and foreground via getMatchingForegroundColor
+$bg = Colority::primary();
+$fg = $bg->getMatchingForegroundColor();
+
+// Revert
+Colority::resetPalette();
 ```
 
 #### Color Utilities

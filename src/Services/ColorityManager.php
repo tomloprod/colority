@@ -11,15 +11,21 @@ use Tomloprod\Colority\Colors\HslColor;
 use Tomloprod\Colority\Colors\OklchColor;
 use Tomloprod\Colority\Colors\RgbColor;
 use Tomloprod\Colority\Concerns\ExtractsColorsFromImage;
+use Tomloprod\Colority\Concerns\ManagesPalette;
+use Tomloprod\Colority\Support\Palette;
 use Tomloprod\Colority\Support\ValueColorParserResolver;
 
 final class ColorityManager
 {
     use ExtractsColorsFromImage;
+    use ManagesPalette;
 
     private static ColorityManager $instance;
 
-    private function __construct() {}
+    private function __construct()
+    {
+        $this->palette = Palette::default();
+    }
 
     public function __clone()
     {
