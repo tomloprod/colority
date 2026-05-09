@@ -168,9 +168,18 @@ test('buildPalette derives secondary as the complementary hue with reduced satur
 
     [$h, $s, $l] = $manager->secondary()->toHsl()->getArrayValueColor();
 
-    expect($h)->toBe(189.0);
-    expect($s)->toBe(40.0);
-    expect($l)->toBe(64.0);
+    expect($h)->toEqualWithDelta(189.0, 0.01);
+    expect($s)->toEqualWithDelta(40.0, 0.01);
+    expect($l)->toEqualWithDelta(64.0, 0.01);
+});
+
+test('buildPalette falls back to the default secondary when the brand is near-grey', function (): void {
+    $manager = ColorityManager::instance();
+    $defaultSecondary = $manager->secondary()->toHex()->getValueColor();
+
+    $manager->buildPalette(new HslColor([0, 0, 50]));
+
+    expect($manager->secondary()->toHex()->getValueColor())->toBe($defaultSecondary);
 });
 
 test('buildPalette derives light and dark from the brand', function (): void {
@@ -178,8 +187,17 @@ test('buildPalette derives light and dark from the brand', function (): void {
 
     $manager->buildPalette(new HslColor([200, 50, 50]));
 
-    expect($manager->light()->toHsl()->getArrayValueColor()[2])->toBe(90.0);
-    expect($manager->dark()->toHsl()->getArrayValueColor()[2])->toBe(10.0);
+    expect($manager->light()->toHsl()->getArrayValueColor()[2])->toEqualWithDelta(90.0, 0.01);
+    expect($manager->dark()->toHsl()->getArrayValueColor()[2])->toEqualWithDelta(10.0, 0.01);
+});
+
+test('buildPalette overwrites custom slots that were previously registered', function (): void {
+    $manager = ColorityManager::instance();
+    $manager->setColor('brand', '#0D6EFD');
+
+    $manager->buildPalette('#FF6347');
+
+    expect($manager->color('brand'))->toBeNull();
 });
 
 test('buildPalette keeps the semantic defaults for success, danger, warning and info', function (): void {

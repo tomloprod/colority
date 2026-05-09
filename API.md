@@ -16,6 +16,7 @@ Complete API documentation for Colority's facades, classes, and methods.
 | **Adjust saturation** | `saturate()`, `desaturate()` | `$color->saturate()` |
 | **Semantic palette** | `primary()`, `success()`, … | `colority()->primary()` |
 | **Customize palette** | `setPrimary()`, `configure()` | `colority()->setPrimary('#FF6347')` |
+| **Build palette from brand** | `buildPalette()` | `colority()->buildPalette('#FF6347')` |
 | **Generate from text** | `textToColor()` | `colority()->textToColor('username')` |
 | **Best contrast color** | `getBestForegroundColor()` | `$bg->getBestForegroundColor()` |
 | **Get contrast ratio** | `getContrastRatio()` | `$color->getContrastRatio($other)` |
@@ -119,11 +120,19 @@ Colority::configure(array<string, Color|string> $palette): void
 Colority::resetPalette(): void
 
 /**
- * Build a coherent palette from a single brand color: 
- * primary becomes the brand, secondary becomes the complementary hue with 
- * reduced saturation, light and dark are the brand brightened and darkened. 
- * 
- * The semantic slots (success, danger, warning, info) keep their library defaults.
+ * Build a coherent palette from a single brand color. The algorithm,
+ * applied in HSL space:
+ *
+ *   primary   = brand
+ *   secondary = HSL(brand.H + 180°, max(10, brand.S * 0.4), brand.L)
+ *               (when brand.S < 5 the default secondary is used instead,
+ *                because a near-grey brand has no meaningful complement)
+ *   light     = brand.lighter(40) // L + 40, clamped to [0, 100]
+ *   dark      = brand.darker(40) // L - 40, clamped to [0, 100]
+ *
+ * The semantic slots (success, danger, warning, info) keep their library 
+ * defaults so they stay visually recognizable across brands. Any custom slots 
+ * previously registered via setColor() are dropped.
  */
 Colority::buildPalette(Color|string $brandColor): void
 ```
